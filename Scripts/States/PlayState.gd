@@ -66,7 +66,7 @@ func _ready():
 	
 	# tell the conductor to play the currently selected song
 	# i might just remove the playstate entirely for this process, and only use the conductor
-	Conductor.play_chart(song, "hard", speed)
+	Conductor.play_chart(song, difficulty, speed)
 	
 	var _c_beat = Conductor.connect("beat_hit", self, "icon_bop") # connect the beat hit signal to the icon bop
 

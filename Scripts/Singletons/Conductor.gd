@@ -10,6 +10,8 @@ const COUNTDOWN_SOUNDS = [preload("res://Assets/Sounds/intro3.ogg"),
 						preload("res://Assets/Sounds/intro2.ogg"),
 						preload("res://Assets/Sounds/intro1.ogg"),
 						preload("res://Assets/Sounds/introGo.ogg")]
+						
+const PLAY_STATE = preload("res://Scenes/States/PlayState.tscn")
 
 var songData
 
@@ -45,6 +47,8 @@ func _ready():
 	MusicStream = streams.get_node("MusicStream")
 	VocalStream = streams.get_node("VocalStream")
 	
+	MusicStream.connect("finished", self, "song_finished")
+	
 	noteThread = Thread.new()
 	noteThread.start(self, "create_notes")
 	
@@ -67,6 +71,8 @@ func _process(delta):
 
 		if (useCountdown):
 			countdown_process(delta)
+			
+		song_finished_check()
 		
 	var countdownMulti = ((countdown / (bpm / 60)) * 2)
 	songPositionMulti = MusicStream.get_playback_position() - countdownMulti
@@ -78,7 +84,11 @@ func play_song(song, newerBpm, speed = 1):
 	song_speed = speed
 	change_bpm(newerBpm)
 	
-	MusicStream.stream = load(song)
+	if (song is Object):
+		MusicStream.stream = song
+	else:
+		MusicStream.stream = load(song)
+	MusicStream.pitch_scale = song_speed
 	MusicStream.play()
 	
 	VocalStream.stop()
@@ -100,10 +110,7 @@ func play_chart(song, difficulty, speed = 1):
 			songDifficulty = 0
 			
 	var songPath = "res://Assets/Songs/" + songName  + "/"
-	
-	var file = File.new()
-	file.open(songPath + songName + difExt + ".json", File.READ)
-	songData = JSON.parse(file.get_as_text()).result["song"]
+	songData = load_song_json(songName, difExt, songPath)
 	
 	song_speed = speed
 	change_bpm(songData["bpm"])
@@ -132,7 +139,7 @@ func play_chart(song, difficulty, speed = 1):
 func change_bpm(newBpm):
 	bpm = float(newBpm)
 	
-	beatCounter = 0
+	beatCounter = 1
 	halfBeatCounter = 0
 	
 	beat_process(0)
@@ -264,3 +271,19 @@ func beat_process(delta):
 		if (halfBeatCounter >= 2):
 			emit_signal("half_beat_hit")
 			halfBeatCounter = 0
+
+func song_finished_check():
+	var scene = get_tree().current_scene.current_scene
+	
+	if (scene == PLAY_STATE):
+		if (!MusicStream.playing && scene.notes.empty()):
+			Main.change_to_main_menu()
+
+func load_song_json(songName, difExt="", songPath = null):
+	if (songPath == null):
+		songPath = "res://Assets/Songs/" + songName  + "/"
+	
+	var file = File.new()
+	file.open(songPath + songName + difExt + ".json", File.READ)
+	
+	return JSON.parse(file.get_as_text()).result["song"]

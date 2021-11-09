@@ -17,6 +17,7 @@ var optionsOffset = Vector2(0, 0)
 var offset = Vector2.ZERO
 
 func _ready():
+	add_child(moveStream)
 	moveStream.stream = preload("res://Assets/Sounds/scroll_menu.ogg")
 
 func _process(_delta):

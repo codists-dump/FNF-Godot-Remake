@@ -4,6 +4,7 @@ var type = 0
 var animFrame = 0
 var selected = false
 
+
 func _process(delta):
 	animFrame += 15 * delta
 	if (animFrame > $Sprite.hframes):
