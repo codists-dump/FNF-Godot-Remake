@@ -6,6 +6,7 @@ export (Resource) var main_scene
 
 var current_scene
 var next_level
+var last_scene
 
 onready var anim = $Transition/AnimationPlayer
 

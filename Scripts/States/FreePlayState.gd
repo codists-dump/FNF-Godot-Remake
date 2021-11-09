@@ -62,6 +62,4 @@ func song_chosen(option):
 	var songName = $CanvasLayer/ChoiceMenu.options[option]
 	var difficulty = difficultys[selectedDifficulty].to_lower()
 	
-	var json = Conductor.load_song_json(songName)
-	
 	Main.change_playstate(songName, difficulty, selectedSpeed)

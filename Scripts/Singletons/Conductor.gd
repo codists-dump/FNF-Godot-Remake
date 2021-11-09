@@ -46,9 +46,7 @@ func _ready():
 	var streams = get_tree().current_scene.get_node("Music")
 	MusicStream = streams.get_node("MusicStream")
 	VocalStream = streams.get_node("VocalStream")
-	
-	MusicStream.connect("finished", self, "song_finished")
-	
+
 	noteThread = Thread.new()
 	noteThread.start(self, "create_notes")
 	
@@ -139,8 +137,8 @@ func play_chart(song, difficulty, speed = 1):
 func change_bpm(newBpm):
 	bpm = float(newBpm)
 	
-	beatCounter = 1
-	halfBeatCounter = 0
+	beatCounter = 0
+	halfBeatCounter = 1
 	
 	beat_process(0)
 
@@ -273,17 +271,17 @@ func beat_process(delta):
 			halfBeatCounter = 0
 
 func song_finished_check():
-	var scene = get_tree().current_scene.current_scene
-	
-	if (scene == PLAY_STATE):
-		if (!MusicStream.playing && scene.notes.empty()):
+	if (!MusicStream.playing):
+		var scene = get_tree().current_scene.current_scene
+		
+		if (scene.get_script() == PLAY_STATE.get_script() && scene.notes.empty()):
 			Main.change_to_main_menu()
 
-func load_song_json(songName, difExt="", songPath = null):
+func load_song_json(song, difExt="", songPath = null):
 	if (songPath == null):
-		songPath = "res://Assets/Songs/" + songName  + "/"
+		songPath = "res://Assets/Songs/" + song  + "/"
 	
 	var file = File.new()
-	file.open(songPath + songName + difExt + ".json", File.READ)
+	file.open(songPath + song + difExt + ".json", File.READ)
 	
 	return JSON.parse(file.get_as_text()).result["song"]

@@ -19,8 +19,19 @@ func change_to_main_menu():
 	
 	get_tree().current_scene.change_scene(MAIN_MENU)
 
-func change_playstate(song, difficulty, speed = 1):
-	var scene = STAGES["stage"].instance()
+func change_playstate(song, difficulty, speed = 1, stage = null):
+	var json = Conductor.load_song_json(song)
+	
+	var scene
+	if (stage == null):
+		var songStage = "stage"
+		if (json.has(["stage"]) && STAGES.has(json["stage"])):
+			songStage = json["stage"]
+			
+		scene = STAGES[songStage].instance()
+	else:
+		scene = load(scene).instance()
+		
 	scene.song = song
 	scene.difficulty = difficulty
 	scene.speed = speed
