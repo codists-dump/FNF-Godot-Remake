@@ -1,0 +1,75 @@
+[gd_scene load_steps=8 format=2]
+
+[ext_resource path="res://Scripts/SceneSwitcher.gd" type="Script" id=1]
+[ext_resource path="res://Scenes/States/MainMenuState.tscn" type="PackedScene" id=2]
+[ext_resource path="res://Assets/Sounds/hit_sound.ogg" type="AudioStream" id=3]
+
+[sub_resource type="Gradient" id=1]
+offsets = PoolRealArray( 0.0397351, 0.258278, 0.682119, 0.981595, 1 )
+colors = PoolColorArray( 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 0 )
+
+[sub_resource type="GradientTexture" id=2]
+gradient = SubResource( 1 )
+
+[sub_resource type="Animation" id=3]
+resource_name = "fade_in"
+length = 0.4
+tracks/0/type = "value"
+tracks/0/path = NodePath("Overlay:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Vector2( 646.24, -1000 ), Vector2( 650, 400 ) ]
+}
+
+[sub_resource type="Animation" id=4]
+resource_name = "fade_out"
+length = 0.4
+tracks/0/type = "value"
+tracks/0/path = NodePath("Overlay:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Vector2( 650, 400 ), Vector2( 650, 1600 ) ]
+}
+
+[node name="SceneSwitcher" type="Node2D"]
+script = ExtResource( 1 )
+main_scene = ExtResource( 2 )
+
+[node name="Music" type="Node" parent="."]
+
+[node name="MusicStream" type="AudioStreamPlayer" parent="Music"]
+bus = "Music"
+
+[node name="VocalStream" type="AudioStreamPlayer" parent="Music"]
+bus = "Vocals"
+
+[node name="DebugBPMStream" type="AudioStreamPlayer" parent="Music"]
+stream = ExtResource( 3 )
+
+[node name="Transition" type="CanvasLayer" parent="."]
+pause_mode = 2
+layer = 100
+
+[node name="Overlay" type="Sprite" parent="Transition"]
+position = Vector2( 646.24, -1000 )
+rotation = 1.57079
+scale = Vector2( 0.913531, 1639.09 )
+texture = SubResource( 2 )
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Transition"]
+anims/fade_in = SubResource( 3 )
+anims/fade_out = SubResource( 4 )
+
+[connection signal="animation_finished" from="Transition/AnimationPlayer" to="." method="_on_AnimationPlayer_animation_finished"]

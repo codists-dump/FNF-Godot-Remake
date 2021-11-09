@@ -1,0 +1,50 @@
+[gd_scene load_steps=8 format=2]
+
+[ext_resource path="res://Scenes/States/PlayState.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Scenes/Objects/Characters/Boyfriend.tscn" type="PackedScene" id=2]
+[ext_resource path="res://Scenes/Objects/Characters/Girlfriend.tscn" type="PackedScene" id=3]
+[ext_resource path="res://Scenes/Objects/Characters/Dad.tscn" type="PackedScene" id=4]
+[ext_resource path="res://Assets/Sprites/Stages/Stage/stagefront.png" type="Texture" id=5]
+[ext_resource path="res://Assets/Sprites/Stages/Stage/stageback.png" type="Texture" id=6]
+[ext_resource path="res://Assets/Sprites/Stages/Stage/stagecurtains.png" type="Texture" id=7]
+
+[node name="Stage" instance=ExtResource( 1 )]
+PlayerCharacter = ExtResource( 2 )
+EnemyCharacter = ExtResource( 4 )
+GFCharacter = ExtResource( 3 )
+
+[node name="Player" parent="Positions" index="0"]
+position = Vector2( 891, 592 )
+
+[node name="Enemy" parent="Positions" index="1"]
+position = Vector2( 153, 592 )
+
+[node name="Girlfriend" parent="Positions" index="2"]
+position = Vector2( 640, 566 )
+
+[node name="Rating" parent="Positions" index="3"]
+position = Vector2( 770, 193 )
+
+[node name="Background" type="ParallaxBackground" parent="." index="3"]
+
+[node name="Background" type="ParallaxLayer" parent="Background" index="0"]
+motion_scale = Vector2( 0.8, 0.8 )
+
+[node name="Stageback" type="Sprite" parent="Background/Background" index="0"]
+position = Vector2( 692, 196 )
+texture = ExtResource( 6 )
+
+[node name="Stage" type="ParallaxLayer" parent="Background" index="1"]
+
+[node name="StageFront" type="Sprite" parent="Background/Stage" index="0"]
+position = Vector2( 692, 775 )
+texture = ExtResource( 5 )
+
+[node name="Foreground" type="ParallaxLayer" parent="Background" index="2"]
+
+[node name="Stagecurtains" type="Sprite" parent="Background/Foreground" index="0"]
+position = Vector2( 692, 196 )
+texture = ExtResource( 7 )
+
+[node name="Camera" parent="." index="4"]
+zoom = Vector2( 1.1, 1.1 )

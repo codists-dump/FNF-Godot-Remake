@@ -1,0 +1,34 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://Assets/Sprites/UI/menuBG.png" type="Texture" id=1]
+[ext_resource path="res://Scripts/States/MainMenuState.gd" type="Script" id=2]
+[ext_resource path="res://Scenes/States/MainMenu/MainMenuOptions.tscn" type="PackedScene" id=3]
+[ext_resource path="res://Assets/Sounds/scroll_menu.ogg" type="AudioStream" id=4]
+[ext_resource path="res://Assets/Sounds/confirm_menu.ogg" type="AudioStream" id=5]
+
+[node name="MainMenuState" type="Node2D"]
+script = ExtResource( 2 )
+
+[node name="Camera2D" type="Camera2D" parent="."]
+offset = Vector2( 640, 360 )
+current = true
+smoothing_enabled = true
+
+[node name="Background" type="Sprite" parent="."]
+modulate = Color( 0.992157, 0.909804, 0.443137, 1 )
+position = Vector2( 643, 365 )
+scale = Vector2( 1.1, 1.1 )
+texture = ExtResource( 1 )
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="MainMenuOptions" parent="." instance=ExtResource( 3 )]
+
+[node name="Sounds" type="Node" parent="."]
+
+[node name="MoveStream" type="AudioStreamPlayer" parent="Sounds"]
+stream = ExtResource( 4 )
+
+[node name="ConfirmStream" type="AudioStreamPlayer" parent="Sounds"]
+stream = ExtResource( 5 )

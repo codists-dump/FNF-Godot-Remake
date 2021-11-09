@@ -1,0 +1,39 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://Assets/Other/Fonts/font.tres" type="DynamicFont" id=1]
+[ext_resource path="res://Scenes/Objects/ChoiceMenu.tscn" type="PackedScene" id=2]
+[ext_resource path="res://Scripts/States/PlayState/PauseMenu.gd" type="Script" id=3]
+
+[node name="PauseMenu" type="Node2D"]
+pause_mode = 2
+script = ExtResource( 3 )
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+layer = 10
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer"]
+margin_right = 1280.0
+margin_bottom = 720.0
+color = Color( 0, 0, 0, 0.368627 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="CanvasLayer"]
+margin_left = 729.0
+margin_top = 13.0
+margin_right = 1268.0
+margin_bottom = 124.0
+custom_fonts/font = ExtResource( 1 )
+text = "SONG NAME
+HARD"
+align = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Options" parent="CanvasLayer" instance=ExtResource( 2 )]
+
+[node name="Tween" type="Tween" parent="."]
+
+[connection signal="option_selected" from="CanvasLayer/Options" to="." method="option_selected"]

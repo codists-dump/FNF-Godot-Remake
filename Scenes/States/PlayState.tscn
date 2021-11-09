@@ -1,0 +1,194 @@
+[gd_scene load_steps=14 format=2]
+
+[ext_resource path="res://Assets/Other/Fonts/vcr.ttf" type="DynamicFontData" id=1]
+[ext_resource path="res://Scripts/States/PlayState.gd" type="Script" id=2]
+[ext_resource path="res://Assets/Sprites/UI/ready_set_go_sheet.png" type="Texture" id=3]
+[ext_resource path="res://Assets/Sprites/Characters/Icons/icon-bf.png" type="Texture" id=4]
+[ext_resource path="res://Assets/Sprites/Characters/Icons/icon-dad.png" type="Texture" id=5]
+[ext_resource path="res://Assets/Sounds/hit_sound.ogg" type="AudioStream" id=6]
+[ext_resource path="res://Assets/Sprites/UI/healthBar.png" type="Texture" id=7]
+[ext_resource path="res://Scenes/States/PlayState/StrumLine.tscn" type="PackedScene" id=8]
+
+[sub_resource type="Animation" id=3]
+resource_name = "Bop"
+length = 0.2
+tracks/0/type = "value"
+tracks/0/path = NodePath("Icons:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.1 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Vector2( 1.7, 1.7 ), Vector2( 1.4, 1.4 ) ]
+}
+
+[sub_resource type="Animation" id=4]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath("Icons:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 1.4, 1.4 ) ]
+}
+
+[sub_resource type="DynamicFont" id=5]
+size = 24
+outline_size = 2
+outline_color = Color( 0, 0, 0, 1 )
+font_data = ExtResource( 1 )
+
+[sub_resource type="DynamicFont" id=1]
+size = 80
+outline_size = 2
+outline_color = Color( 0, 0, 0, 1 )
+font_data = ExtResource( 1 )
+
+[sub_resource type="DynamicFont" id=2]
+size = 40
+outline_size = 1
+outline_color = Color( 0, 0, 0, 1 )
+font_data = ExtResource( 1 )
+
+[node name="PlayState" type="Node2D"]
+script = ExtResource( 2 )
+PlayerStrumPath = NodePath("HUD/PlayerStrumLine")
+EnemyStrumPath = NodePath("HUD/EnemyStrumLine")
+
+[node name="HUD" type="CanvasLayer" parent="."]
+scale = Vector2( 0.7, 0.7 )
+transform = Transform2D( 0.7, 0, 0, 0.7, 0, 0 )
+
+[node name="Ratings" type="Node" parent="HUD"]
+
+[node name="PlayerStrumLine" parent="HUD" instance=ExtResource( 8 )]
+position = Vector2( 1127.86, 150 )
+
+[node name="EnemyStrumLine" parent="HUD" instance=ExtResource( 8 )]
+position = Vector2( 213.571, 150 )
+
+[node name="HealthBar" type="TextureProgress" parent="HUD"]
+anchor_left = 0.359
+anchor_top = 1.269
+anchor_right = 0.359
+anchor_bottom = 1.269
+margin_left = 34.7657
+margin_top = -11.6801
+margin_right = 635.766
+margin_bottom = 7.31995
+rect_scale = Vector2( 1.4, 1.4 )
+value = 50.0
+texture_under = ExtResource( 7 )
+texture_progress = ExtResource( 7 )
+fill_mode = 1
+tint_under = Color( 1, 0, 0, 1 )
+tint_progress = Color( 0.0784314, 1, 0, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Icons" type="Node2D" parent="HUD/HealthBar"]
+position = Vector2( 300, 0 )
+scale = Vector2( 1.4, 1.4 )
+
+[node name="Enemy" type="Sprite" parent="HUD/HealthBar/Icons"]
+scale = Vector2( 0.714286, 0.714286 )
+texture = ExtResource( 5 )
+offset = Vector2( -50, 0 )
+hframes = 2
+
+[node name="Player" type="Sprite" parent="HUD/HealthBar/Icons"]
+scale = Vector2( 0.714286, 0.714286 )
+texture = ExtResource( 4 )
+offset = Vector2( 50, 0 )
+flip_h = true
+hframes = 2
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="HUD/HealthBar/Icons"]
+root_node = NodePath("../..")
+anims/Bop = SubResource( 3 )
+anims/RESET = SubResource( 4 )
+
+[node name="TextBar" type="Label" parent="HUD"]
+margin_top = 960.286
+margin_right = 1829.0
+margin_bottom = 1008.29
+custom_fonts/font = SubResource( 5 )
+text = "Health: 0%"
+align = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Debug" type="Node2D" parent="HUD"]
+
+[node name="Rating" type="Label" parent="HUD/Debug"]
+margin_top = 86.0059
+margin_right = 1829.0
+margin_bottom = 235.006
+custom_fonts/font = SubResource( 1 )
+text = "100"
+align = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="RatingMS" type="Label" parent="HUD/Debug"]
+margin_top = 166.0
+margin_right = 1829.0
+margin_bottom = 214.0
+custom_fonts/font = SubResource( 2 )
+text = "10ms"
+align = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Countdown" type="Sprite" parent="HUD"]
+visible = false
+position = Vector2( 914.286, 514.286 )
+texture = ExtResource( 3 )
+hframes = 3
+
+[node name="Audio" type="Node2D" parent="."]
+
+[node name="CountdownStream" type="AudioStreamPlayer" parent="Audio"]
+bus = "SFX"
+
+[node name="MissStream" type="AudioStreamPlayer" parent="Audio"]
+bus = "SFX"
+
+[node name="HitsoundStream" type="AudioStreamPlayer" parent="Audio"]
+stream = ExtResource( 6 )
+bus = "Hitsounds"
+
+[node name="Positions" type="Node2D" parent="."]
+
+[node name="Player" type="Position2D" parent="Positions"]
+position = Vector2( 1030, 640 )
+
+[node name="Enemy" type="Position2D" parent="Positions"]
+position = Vector2( 241, 640 )
+
+[node name="Girlfriend" type="Position2D" parent="Positions"]
+position = Vector2( 640, 462 )
+
+[node name="Rating" type="Position2D" parent="Positions"]
+position = Vector2( 640, 462 )
+
+[node name="Camera" type="Camera2D" parent="."]
+position = Vector2( 640, 360 )
+current = true
+smoothing_enabled = true
+
+[node name="Characters" type="Node2D" parent="."]
+
+[node name="Ratings" type="Node" parent="."]
