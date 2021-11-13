@@ -33,7 +33,6 @@ stream = ExtResource( 5 )
 [node name="Buttons" type="CanvasLayer" parent="."]
 
 [node name="Timer" type="Timer" parent="."]
-wait_time = 1.5
 one_shot = true
 
 [connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]

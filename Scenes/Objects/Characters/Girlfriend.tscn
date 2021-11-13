@@ -106,6 +106,7 @@ tracks/0/keys = {
 script = ExtResource( 1 )
 idleDance = true
 idleDanceSpeed = true
+camOffset = Vector2( 0, -300 )
 girlfriendPosition = true
 iconSheet = ExtResource( 3 )
 characterColor = Color( 0.647059, 0, 0.301961, 1 )
@@ -115,7 +116,7 @@ position = Vector2( 1, -320 )
 texture = ExtResource( 2 )
 hframes = 10
 vframes = 7
-frame = 4
+frame = 40
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 autoplay = "danceLEFT"

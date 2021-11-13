@@ -1,7 +1,8 @@
 extends Node2D
 
 const BUTTON_SCENE = preload("res://Scenes/States/MainMenu/MainMenuButton.tscn")
-var options = {"story": 3, "freeplay": 1, "options": 2, "donate": 0}
+# var options = {"story": 3, "freeplay": 1, "options": 2, "donate": 0}
+var options = {"freeplay": 1, "options": 2}
 
 var optionsOffset = Vector2(640, 150)
 
@@ -24,6 +25,11 @@ func _process(_delta):
 	$Camera2D.position = Vector2(0, (offset * 15))
 	
 	var move = int(Input.is_action_just_pressed("down")) - int(Input.is_action_just_pressed("up"))
+	if (selected + move < 0):
+		move = 0
+	if (selected + move > options.size() - 1):
+		move = 0
+	
 	selected += move
 	
 	if (move != 0):
@@ -69,6 +75,8 @@ func option_logic(name):
 	match (name):
 		"freeplay":
 			Main.change_scene("res://Scenes/States/FreePlayState.tscn")
+		"options":
+			Main.change_scene("res://Scenes/States/OptionsState.tscn")
 		_:
 			Main.change_to_main_menu()
 

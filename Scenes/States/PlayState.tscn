@@ -67,6 +67,17 @@ EnemyStrumPath = NodePath("HUD/EnemyStrumLine")
 scale = Vector2( 0.7, 0.7 )
 transform = Transform2D( 0.7, 0, 0, 0.7, 0, 0 )
 
+[node name="Background" type="ColorRect" parent="HUD"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_right = -836.0
+margin_bottom = -67.0
+rect_scale = Vector2( 4.12078, 1.57625 )
+color = Color( 0, 0, 0, 0 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
 [node name="Ratings" type="Node" parent="HUD"]
 
 [node name="PlayerStrumLine" parent="HUD" instance=ExtResource( 8 )]

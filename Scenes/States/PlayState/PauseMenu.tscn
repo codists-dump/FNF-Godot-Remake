@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://Assets/Other/Fonts/font.tres" type="DynamicFont" id=1]
 [ext_resource path="res://Scenes/Objects/ChoiceMenu.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Scripts/States/PlayState/PauseMenu.gd" type="Script" id=3]
+[ext_resource path="res://Scenes/States/Options/OptionsMenu.tscn" type="PackedScene" id=4]
 
 [node name="PauseMenu" type="Node2D"]
 pause_mode = 2
@@ -19,7 +20,9 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Label" type="Label" parent="CanvasLayer"]
+[node name="PauseMenu" type="Node2D" parent="CanvasLayer"]
+
+[node name="Label" type="Label" parent="CanvasLayer/PauseMenu"]
 margin_left = 729.0
 margin_top = 13.0
 margin_right = 1268.0
@@ -32,8 +35,12 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Options" parent="CanvasLayer" instance=ExtResource( 2 )]
+[node name="Options" parent="CanvasLayer/PauseMenu" instance=ExtResource( 2 )]
+
+[node name="OptionsMenu" parent="CanvasLayer" instance=ExtResource( 4 )]
+visible = false
+inGame = true
 
 [node name="Tween" type="Tween" parent="."]
 
-[connection signal="option_selected" from="CanvasLayer/Options" to="." method="option_selected"]
+[connection signal="option_selected" from="CanvasLayer/PauseMenu/Options" to="." method="option_selected"]

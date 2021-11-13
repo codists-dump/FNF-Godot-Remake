@@ -4,7 +4,7 @@ signal beat_hit()
 signal half_beat_hit()
 
 const SCROLL_DISTANCE = 1.6 # units
-const SCROLL_TIME = 6.80 # sec
+const SCROLL_TIME = 5.50 # sec
 
 const COUNTDOWN_SOUNDS = [preload("res://Assets/Sounds/intro3.ogg"),
 						preload("res://Assets/Sounds/intro2.ogg"),
@@ -126,6 +126,8 @@ func play_chart(song, difficulty, speed = 1):
 	if (songData["needsVoices"]):
 		VocalStream.stream = load(songPath + "/Voices.ogg")
 		VocalStream.pitch_scale = song_speed
+	else:
+		VocalStream.stream = null
 	
 	countdown = 2.8
 	useCountdown = true
@@ -137,10 +139,7 @@ func play_chart(song, difficulty, speed = 1):
 func change_bpm(newBpm):
 	bpm = float(newBpm)
 	
-	beatCounter = 0
-	halfBeatCounter = 1
-	
-	beat_process(0)
+	beatCounter = 1
 
 func create_notes():
 	notesFinished = false
@@ -160,7 +159,7 @@ func create_notes():
 		sections.append(sectionData)
 		
 		for note in section["sectionNotes"]:
-			var strum_time = note[0] / 1000
+			var strum_time = (note[0] + Settings.offset) / 1000
 			var sustain_length = int(note[2]) / 1000.0
 			var direction = int(note[1])
 
@@ -271,11 +270,8 @@ func beat_process(delta):
 			halfBeatCounter = 0
 
 func song_finished_check():
-	if (!MusicStream.playing):
-		var scene = get_tree().current_scene.current_scene
-		
-		if (scene.get_script() == PLAY_STATE.get_script() && scene.notes.empty()):
-			Main.change_to_main_menu()
+	if (MusicStream.get_playback_position() >= MusicStream.stream.get_length()):
+		Main.change_to_main_menu()
 
 func load_song_json(song, difExt="", songPath = null):
 	if (songPath == null):

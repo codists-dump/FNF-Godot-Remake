@@ -36,6 +36,7 @@ export (float) var speed = 1
 var health = 50
 var score = 0
 var misses = 0
+var realMisses = 0
 var combo = 0
 
 var hitNotesArray = [] # all hit note timings
@@ -246,31 +247,32 @@ func on_hit(must_hit, note_type, timing):
 	if (character != null):
 		var animName = player_sprite(note_type, "")
 		character.play(animName)
+		
+		if (Settings.cameraMovement):
+			if (must_hit && must_hit_section || !must_hit && !must_hit_section):
+				var offsetVector = character.camOffset
+				var intensity = 10
+				
+				match (note_type):
+					Note.Left:
+						if (character.flipX):
+							offsetVector.x += -intensity
+						else:
+							offsetVector.x += intensity
+					Note.Right:
+						if (character.flipX):
+							offsetVector.x += intensity
+						else:
+							offsetVector.x += -intensity
+					Note.Down:
+						offsetVector.y += intensity
+					Note.Up:
+						offsetVector.y += -intensity
 
-		if (must_hit && must_hit_section || !must_hit && !must_hit_section):
-			var offsetVector = character.camOffset
-			var intensity = 10
-			
-			match (note_type):
-				Note.Left:
-					if (character.flipX):
-						offsetVector.x += -intensity
-					else:
-						offsetVector.x += intensity
-				Note.Right:
-					if (character.flipX):
-						offsetVector.x += intensity
-					else:
-						offsetVector.x += -intensity
-				Note.Down:
-					offsetVector.y += intensity
-				Note.Up:
-					offsetVector.y += -intensity
-
-			if (character.flipX):
-				$Camera.position = character.position + Vector2(offsetVector.x, offsetVector.y)
-			else:
-				$Camera.position = character.position + Vector2(-offsetVector.x, offsetVector.y)
+				if (character.flipX):
+					$Camera.position = character.position + Vector2(offsetVector.x, offsetVector.y)
+				else:
+					$Camera.position = character.position + Vector2(-offsetVector.x, offsetVector.y)
 			
 	if (must_hit):
 		var rating = get_rating(timing)
@@ -306,10 +308,11 @@ func on_miss(must_hit, note_type, passed = false):
 	health -= 5.0
 	if (!passed):
 		score -= 10
-	misses += 1
+		misses += 1
+	else:
+		realMisses += 1
+		Conductor.muteVocals = true
 	combo = 0
-	
-	Conductor.muteVocals = true
 
 func get_rating(timing):
 	# get the last rating in the array and set it to the default (the last rating is the best)
@@ -380,19 +383,21 @@ func health_bar_process():
 	var accuracyString = "N/A"
 	var letterRating = ""
 	if (!hitNotesArray.empty()):
-		var totalNotes = float(hitNotesArray.size() + misses)
+		var totalNotes = float(hitNotesArray.size() + realMisses)
 		var accuracy = round((float(hitNotesArray.size()) / totalNotes) * 100)
 		
 		accuracyString = str(accuracy) + "%"
 		letterRating = " [" + get_letter_rating(accuracy) + "]"
 	
-	$HUD/TextBar.text = "Health: " + str(health) + "% | Score: " + str(score) + " | Misses: " + str(misses) + " | " + accuracyString + letterRating
+	$HUD/TextBar.text = "Health: " + str(health) + "% | Score: " + str(score) + " | Misses: " + str(misses + realMisses) + " | " + accuracyString + letterRating
 	$HUD/Debug/Rating.text = str(combo)
+	
+	$HUD/Background.color.a = Settings.backgroundOpacity
 		
 func get_letter_rating(accuracy):
 	var letterRatings = {"A+": 95, "A": 85, "B+": 77.5, "B": 72.5, "C+": 67.5, "C": 62.5, "D+": 57.5, "D": 52.5, "E": 45, "F": 20}
 	
-	if (misses == 0):
+	if (realMisses == 0):
 		return "FC"
 	
 	var chosenRating = letterRatings.keys()[letterRatings.keys().size()-1]
@@ -411,6 +416,7 @@ func setup_characters():
 	if (GFCharacter != null):
 		GFCharacter = GFCharacter.instance()
 		$Characters.add_child(GFCharacter)
+		
 		GFCharacter.position = $Positions/Girlfriend.position
 	
 	if (EnemyCharacter != null):
@@ -469,6 +475,9 @@ func setup_strums():
 			EnemyStrum.scale = EnemyStrum.scale * 0.5
 		else:
 			EnemyStrum.visible = false
+	
+	for button in EnemyStrum.get_node("Buttons").get_children():
+		button.enemyStrum = true
 
 func create_rating(rating):
 	var ratingObj = RATING_SCENE.instance()
