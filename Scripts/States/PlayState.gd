@@ -116,6 +116,10 @@ func button_logic(line, note):
 	var button = line.get_node("Buttons/" + buttonName)
 	var animation = button.get_node("AnimationPlayer")
 	
+	if (Input.is_action_pressed(action)):
+		if (PlayerCharacter.idleTimer <= 0.05):
+			PlayerCharacter.idleTimer = 0.05
+	
 	# check if the action is pressed
 	if (Input.is_action_just_pressed(action)):
 		# check each note to make for the closest one
@@ -145,7 +149,8 @@ func button_logic(line, note):
 			for dupedNote in activeNotes:
 				if (dupedNote.note_type == curNote.note_type):
 					if (dupedNote.strum_time <= curNote.strum_time + 0.01):
-						dupedNote.queue_free()
+						if (dupedNote.sustain_length <= 0):
+							dupedNote.queue_free()
 		
 		# miss if pressed when there is no note
 		# also play the pressed animation
@@ -226,8 +231,6 @@ func spawn_note(dir, strum_time, sustain_length):
 			Note.Right:
 				spawn_lane = strumLine.get_node("Buttons/Right")
 		
-		strumLine.get_node("Notes").add_child(note)
-		
 		note.position.x = spawn_lane.position.x
 		note.position.y = 1280
 		
@@ -238,6 +241,8 @@ func spawn_note(dir, strum_time, sustain_length):
 		
 		if (strumLine == PlayerStrum):
 			note.must_hit = true
+		
+		strumLine.get_node("Notes").add_child(note)
 
 func on_hit(must_hit, note_type, timing):
 	var character = EnemyCharacter
@@ -247,6 +252,7 @@ func on_hit(must_hit, note_type, timing):
 	if (character != null):
 		var animName = player_sprite(note_type, "")
 		character.play(animName)
+		character.idleTimer = 0.5
 		
 		if (Settings.cameraMovement):
 			if (must_hit && must_hit_section || !must_hit && !must_hit_section):

@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=2]
+[gd_scene load_steps=15 format=2]
 
 [ext_resource path="res://Assets/Other/Fonts/vcr.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://Scripts/States/PlayState.gd" type="Script" id=2]
@@ -8,6 +8,7 @@
 [ext_resource path="res://Assets/Sounds/hit_sound.ogg" type="AudioStream" id=6]
 [ext_resource path="res://Assets/Sprites/UI/healthBar.png" type="Texture" id=7]
 [ext_resource path="res://Scenes/States/PlayState/StrumLine.tscn" type="PackedScene" id=8]
+[ext_resource path="res://Scenes/Mobile/MobilePlayControls.tscn" type="PackedScene" id=9]
 
 [sub_resource type="Animation" id=3]
 resource_name = "Bop"
@@ -203,3 +204,5 @@ smoothing_enabled = true
 [node name="Characters" type="Node2D" parent="."]
 
 [node name="Ratings" type="Node" parent="."]
+
+[node name="MobilePlayStateControls" parent="." instance=ExtResource( 9 )]

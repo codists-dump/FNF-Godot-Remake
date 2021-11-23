@@ -1,16 +1,17 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://Assets/Other/Fonts/font.tres" type="DynamicFont" id=1]
 [ext_resource path="res://Scenes/Objects/ChoiceMenu.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Scripts/States/PlayState/PauseMenu.gd" type="Script" id=3]
 [ext_resource path="res://Scenes/States/Options/OptionsMenu.tscn" type="PackedScene" id=4]
+[ext_resource path="res://Scenes/Mobile/MobileMenuControls.tscn" type="PackedScene" id=5]
 
 [node name="PauseMenu" type="Node2D"]
 pause_mode = 2
 script = ExtResource( 3 )
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
-layer = 10
+layer = 4
 
 [node name="ColorRect" type="ColorRect" parent="CanvasLayer"]
 margin_right = 1280.0
@@ -42,5 +43,7 @@ visible = false
 inGame = true
 
 [node name="Tween" type="Tween" parent="."]
+
+[node name="MobileMenuControls" parent="." instance=ExtResource( 5 )]
 
 [connection signal="option_selected" from="CanvasLayer/PauseMenu/Options" to="." method="option_selected"]

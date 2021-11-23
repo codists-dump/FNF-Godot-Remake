@@ -18,9 +18,14 @@ const CHARACTERS = {
 
 var difficultys = ["EASY", "NORMAL", "HARD"]
 
+var mobileMode = false
 
 func _ready():
 	pause_mode = Node.PAUSE_MODE_PROCESS
+	
+	match OS.get_name():
+		"Android", "iOS":
+			mobileMode = true
 
 func change_scene(path):
 	get_tree().current_scene.change_scene(path)

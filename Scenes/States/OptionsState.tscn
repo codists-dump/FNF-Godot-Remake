@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://Scripts/States/OptionsState.gd" type="Script" id=1]
 [ext_resource path="res://Assets/Sprites/UI/menuBG.png" type="Texture" id=2]
 [ext_resource path="res://Scenes/States/Options/OptionsMenu.tscn" type="PackedScene" id=3]
+[ext_resource path="res://Scenes/Mobile/MobileMenuControls.tscn" type="PackedScene" id=4]
 
 [node name="OptionsState" type="Node2D"]
 script = ExtResource( 1 )
@@ -16,3 +17,5 @@ __meta__ = {
 }
 
 [node name="OptionsMenu" parent="." instance=ExtResource( 3 )]
+
+[node name="MobileMenuControls" parent="." instance=ExtResource( 4 )]
