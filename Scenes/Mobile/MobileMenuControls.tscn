@@ -1,7 +1,7 @@
 [gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://Assets/Sprites/Notes/Strum_Sprites.png" type="Texture" id=1]
-[ext_resource path="res://Scripts/Other/MobileOnly.gd" type="Script" id=2]
+[ext_resource path="res://Scripts/Other/Mobile/MobileMenuControls.gd" type="Script" id=2]
 [ext_resource path="res://Assets/Sprites/UI/Mobile/menu_buttons.png" type="Texture" id=3]
 
 [sub_resource type="AtlasTexture" id=1]
@@ -38,14 +38,16 @@ region = Rect2( 227.544, 242.008, 127.253, 116.417 )
 layer = 5
 script = ExtResource( 2 )
 
-[node name="Left" type="TouchScreenButton" parent="."]
+[node name="Arrows" type="Node2D" parent="."]
+
+[node name="Left" type="TouchScreenButton" parent="Arrows"]
 position = Vector2( 42, 546 )
 scale = Vector2( 0.752874, 0.752874 )
 normal = SubResource( 1 )
 pressed = SubResource( 2 )
 action = "left"
 
-[node name="Right" type="TouchScreenButton" parent="."]
+[node name="Right" type="TouchScreenButton" parent="Arrows"]
 position = Vector2( 441, 677 )
 rotation = 3.14159
 scale = Vector2( 0.752874, 0.752874 )
@@ -53,7 +55,7 @@ normal = SubResource( 1 )
 pressed = SubResource( 2 )
 action = "right"
 
-[node name="Down" type="TouchScreenButton" parent="."]
+[node name="Down" type="TouchScreenButton" parent="Arrows"]
 position = Vector2( 178, 683 )
 rotation = -1.57079
 scale = Vector2( 0.752874, 0.752874 )
@@ -61,7 +63,7 @@ normal = SubResource( 1 )
 pressed = SubResource( 2 )
 action = "down"
 
-[node name="Up" type="TouchScreenButton" parent="."]
+[node name="Up" type="TouchScreenButton" parent="Arrows"]
 position = Vector2( 308, 411 )
 rotation = 1.57079
 scale = Vector2( 0.752874, 0.752874 )

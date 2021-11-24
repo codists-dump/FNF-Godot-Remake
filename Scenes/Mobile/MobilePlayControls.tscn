@@ -1,6 +1,6 @@
-[gd_scene load_steps=14 format=2]
+[gd_scene load_steps=15 format=2]
 
-[ext_resource path="res://Scripts/Other/MobileOnly.gd" type="Script" id=1]
+[ext_resource path="res://Scripts/Other/Mobile/MobileOnly.gd" type="Script" id=1]
 [ext_resource path="res://Assets/Sprites/UI/Mobile/menu_buttons.png" type="Texture" id=2]
 
 [sub_resource type="Gradient" id=3]
@@ -37,6 +37,9 @@ gradient = SubResource( 8 )
 flags = 4
 atlas = ExtResource( 2 )
 region = Rect2( 29.3794, 378.913, 84.4593, 113.03 )
+
+[sub_resource type="RectangleShape2D" id=13]
+extents = Vector2( 60, 60 )
 
 [node name="MobilePlayStateControls" type="CanvasLayer"]
 layer = 3
@@ -79,7 +82,8 @@ passby_press = true
 action = "right"
 
 [node name="Pause" type="TouchScreenButton" parent="."]
-position = Vector2( 1224, 15 )
-scale = Vector2( 0.476189, 0.476189 )
+position = Vector2( 1214, 13 )
+scale = Vector2( 0.523807, 0.523807 )
 normal = SubResource( 12 )
+shape = SubResource( 13 )
 action = "confirm"

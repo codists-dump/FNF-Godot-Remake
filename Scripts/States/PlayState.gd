@@ -117,8 +117,9 @@ func button_logic(line, note):
 	var animation = button.get_node("AnimationPlayer")
 	
 	if (Input.is_action_pressed(action)):
-		if (PlayerCharacter.idleTimer <= 0.05):
-			PlayerCharacter.idleTimer = 0.05
+		if (PlayerCharacter != null && PlayerCharacter.get_node("AnimationPlayer").assigned_animation != PlayerCharacter.get_idle_anim()):
+			if (PlayerCharacter.idleTimer <= 0.05):
+				PlayerCharacter.idleTimer = 0.05
 	
 	# check if the action is pressed
 	if (Input.is_action_just_pressed(action)):
@@ -147,10 +148,12 @@ func button_logic(line, note):
 			# shubs duped note check thing
 			# (thanks shubs you are awesome)
 			for dupedNote in activeNotes:
+				if (dupedNote == curNote):
+					continue
+				
 				if (dupedNote.note_type == curNote.note_type):
 					if (dupedNote.strum_time <= curNote.strum_time + 0.01):
-						if (dupedNote.sustain_length <= 0):
-							dupedNote.queue_free()
+						dupedNote.queue_free()
 		
 		# miss if pressed when there is no note
 		# also play the pressed animation
@@ -449,6 +452,9 @@ func setup_characters():
 		
 		setup_icon($HUD/HealthBar/Icons/Player, PlayerCharacter)
 		$HUD/HealthBar.tint_progress = PlayerCharacter.characterColor
+		
+	if (PlayerCharacter.girlfriendPosition || EnemyCharacter.girlfriendPosition):
+		GFCharacter.queue_free()
 
 func setup_icon(node, character):
 	var frames = character.iconSheet.get_width() / 150

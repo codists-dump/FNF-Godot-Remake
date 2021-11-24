@@ -13,6 +13,8 @@ const CHARACTERS = {
 	"gf": preload("res://Scenes/Objects/Characters/Girlfriend.tscn"),
 	"dad": preload("res://Scenes/Objects/Characters/Dad.tscn"),
 	"spooky": preload("res://Scenes/Objects/Characters/Spooky_Kids.tscn"),
+	"pico": preload("res://Scenes/Objects/Characters/Pico.tscn"),
+	
 	"codist": preload("res://Scenes/Objects/Characters/Mods/Codist.tscn")
 }
 
@@ -59,6 +61,8 @@ func change_playstate(song, difficulty, speed = 1):
 	scene.song = song
 	scene.difficulty = difficulty
 	scene.speed = speed
+	
+	player1 = CHARACTERS['pico']
 	
 	if (player1 != null):
 		scene.PlayerCharacter = player1

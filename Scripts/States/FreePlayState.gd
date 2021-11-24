@@ -10,6 +10,9 @@ var songData
 var character1
 var character2
 
+var loadedJsons = {}
+var loadedSongs = {}
+
 func _ready():
 	get_songs()
 	
@@ -18,15 +21,6 @@ func _ready():
 	songsMenu.connect("option_selected", self, "song_chosen")
 	
 	song_selected(0)
-	
-func _input(event):
-	if (event is InputEventKey):
-		if (event.scancode == KEY_SPACE):
-			if (event.pressed):
-				var songName = $CanvasLayer/ChoiceMenu.options[$CanvasLayer/ChoiceMenu.selected]
-				var json = Conductor.load_song_json(songName)
-			
-				Conductor.play_song("res://Assets/Songs/" + songName + "/Inst.ogg", json["bpm"])
 
 func _process(_delta):
 	if (Input.is_action_just_pressed("cancel")):
@@ -63,6 +57,8 @@ func get_songs():
 			break
 		elif not file.begins_with("."):
 			songsMenu.options.append(file)
+			loadedJsons[file] = Conductor.load_song_json(file)
+			loadedSongs[file] = load("res://Assets/Songs/" + file + "/Inst.ogg")
 			
 	songsMenu.options.sort()
 	
@@ -90,7 +86,8 @@ func setup_song_info():
 
 func song_selected(option):
 	var songName = $CanvasLayer/ChoiceMenu.options[option]
-	songData = Conductor.load_song_json(songName)
+	songData = loadedJsons[songName]
+	Conductor.play_song(loadedSongs[songName], songData["bpm"])
 	
 	var player1 = "test"
 	var player2 = "test"

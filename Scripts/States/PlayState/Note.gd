@@ -101,8 +101,13 @@ func _process(_delta):
 		var multi = 1
 		if (Settings.downScroll):
 			multi = -1
+		
 		# awesome hold note math magic by Scarlett
-		$Line2D.points[1] = Vector2(0, sustain_length * (SCROLL_DISTANCE * Conductor.scroll_speed * Conductor.scroll_speed / SCROLL_TIME) * multi)
+		var lineY = (sustain_length * (SCROLL_DISTANCE * Conductor.scroll_speed * Conductor.scroll_speed / SCROLL_TIME) * multi) - holdSprs[key][1].get_height()
+		if (lineY <= 0):
+			lineY = 0
+		
+		$Line2D.points[1] = Vector2(0, lineY)
 		update()
 		
 	if (held):
@@ -113,6 +118,8 @@ func _process(_delta):
 		
 		if (sustain_length <= 0):
 			queue_free()
+			
+		position.y = strum_lane.position.y
 		
 		var character = playState.EnemyCharacter
 		if (must_hit):
@@ -121,7 +128,8 @@ func _process(_delta):
 		character.idleTimer = 0.2
 		
 		var animName = playState.player_sprite(note_type, "")
-		character.play(animName)
+		if (character.get_node("AnimationPlayer").get_current_animation_position() >= 0.15):
+			character.play(animName)
 		
 		if (must_hit && !Settings.botPlay):
 			if (!Input.is_action_pressed(key)):
@@ -133,4 +141,11 @@ func _process(_delta):
 
 func _draw():
 	if (holdNote):
-		draw_texture(holdSprs[key][1], Vector2($Line2D.points[1].x - 25, $Line2D.points[1].y), $Line2D.default_color)
+		var pos = Vector2($Line2D.points[1].x - 25, $Line2D.points[1].y)
+		
+		var lineHeight = clamp($Line2D.points[1].y, 0, holdSprs[key][1].get_height())
+		
+		var size = Vector2(holdSprs[key][1].get_size().x, lineHeight)
+		var rect = Rect2(pos, size)
+		
+		draw_texture_rect(holdSprs[key][1], rect, false, $Line2D.default_color)

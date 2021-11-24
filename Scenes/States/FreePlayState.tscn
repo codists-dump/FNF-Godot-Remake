@@ -1,18 +1,13 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://Scenes/Objects/ChoiceMenu.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Assets/Sprites/UI/menuBG.png" type="Texture" id=2]
 [ext_resource path="res://Scripts/States/FreePlayState.gd" type="Script" id=3]
 [ext_resource path="res://Assets/Sounds/cancel_menu.ogg" type="AudioStream" id=4]
 [ext_resource path="res://Assets/Other/Fonts/font.tres" type="DynamicFont" id=5]
-[ext_resource path="res://Assets/Other/Fonts/vcr.ttf" type="DynamicFontData" id=6]
 [ext_resource path="res://Assets/Sprites/Characters/Icons/icon-bf.png" type="Texture" id=7]
 [ext_resource path="res://Assets/Sprites/Characters/Icons/icon-dad.png" type="Texture" id=8]
 [ext_resource path="res://Scenes/Mobile/MobileMenuControls.tscn" type="PackedScene" id=9]
-
-[sub_resource type="DynamicFont" id=1]
-size = 15
-font_data = ExtResource( 6 )
 
 [node name="FreeplayState" type="Node2D"]
 script = ExtResource( 3 )
@@ -86,26 +81,6 @@ custom_fonts/font = ExtResource( 5 )
 text = "AWESOME"
 align = 2
 clip_text = true
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="BottomBar" type="ColorRect" parent="CanvasLayer"]
-margin_top = 701.0
-margin_right = 1280.0
-margin_bottom = 720.0
-color = Color( 0, 0, 0, 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Label" type="Label" parent="CanvasLayer/BottomBar"]
-margin_right = 1280.0
-margin_bottom = 19.0
-custom_fonts/font = SubResource( 1 )
-text = "PRESS [SPACE] TO LISTEN TO THE SONG. [LEFT] & [RIGHT] to change the difficulty."
-align = 1
-valign = 1
 __meta__ = {
 "_edit_use_anchors_": false
 }
