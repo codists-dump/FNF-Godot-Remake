@@ -101,14 +101,15 @@ func _process(_delta):
 		var multi = 1
 		if (Settings.downScroll):
 			multi = -1
-		$Line2D.points[1] = Vector2(0, ((sustain_length * Conductor.bpm) * SCROLL_TIME) * multi)
+		# awesome hold note math magic by Scarlett
+		$Line2D.points[1] = Vector2(0, sustain_length * (SCROLL_DISTANCE * Conductor.scroll_speed * Conductor.scroll_speed / SCROLL_TIME) * multi)
 		update()
 		
 	if (held):
 		var animPlayer = strum_lane.get_node("AnimationPlayer")
 		animPlayer.play("hit")
 		
-		sustain_length -= ((Conductor.bpm / 60) / Conductor.scroll_speed) * _delta
+		sustain_length -= _delta
 		
 		if (sustain_length <= 0):
 			queue_free()
@@ -122,7 +123,7 @@ func _process(_delta):
 		var animName = playState.player_sprite(note_type, "")
 		character.play(animName)
 		
-		if (must_hit):
+		if (must_hit && !Settings.botPlay):
 			if (!Input.is_action_pressed(key)):
 				held = false
 				animPlayer.play("idle")
