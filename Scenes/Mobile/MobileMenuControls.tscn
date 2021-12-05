@@ -39,6 +39,7 @@ layer = 5
 script = ExtResource( 2 )
 
 [node name="Arrows" type="Node2D" parent="."]
+visible = false
 
 [node name="Left" type="TouchScreenButton" parent="Arrows"]
 position = Vector2( 42, 546 )
@@ -72,6 +73,7 @@ pressed = SubResource( 2 )
 action = "up"
 
 [node name="Confirm" type="TouchScreenButton" parent="."]
+visible = false
 position = Vector2( 1101, 546 )
 scale = Vector2( 0.752874, 0.752874 )
 normal = SubResource( 7 )
@@ -79,6 +81,7 @@ pressed = SubResource( 4 )
 action = "confirm"
 
 [node name="Cancel" type="TouchScreenButton" parent="."]
+visible = false
 position = Vector2( 1208, 422 )
 rotation = 1.57079
 scale = Vector2( 0.752874, 0.752874 )

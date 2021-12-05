@@ -14,9 +14,12 @@ func draw_options():
 	for option in options:
 		var sIdx = idx - selected
 		
-		var color = Color.darkgray
-		if (selected == idx):
-			color = Color.white
+		var color = Color.white
+		if (selected != idx):
+			color.a = 0.6
+		if (!enabled):
+			color = Color.webgray
+			color.a = 0.6
 		
 		var data = menu.options[menu.pageName][option]
 		

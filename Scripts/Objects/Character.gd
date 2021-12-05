@@ -8,12 +8,14 @@ export (bool) var idleDance = false
 export (bool) var idleDanceSpeed = false
 export (Vector2) var camOffset = Vector2(0, 0)
 export (bool) var girlfriendPosition = false
+export (bool) var hasAlt = false
 
 export (Resource) var iconSheet = preload("res://Assets/Sprites/Characters/Icons/icon-face.png")
 export (Color) var characterColor = Color.yellow
 
 var lastIdleDance = null
 var idleTimer = 0
+var useAlt = false
 
 func _ready():
 	if Engine.editor_hint:
@@ -52,6 +54,11 @@ func play(animName):
 				animName = "singRIGHTMiss"
 			"singRIGHTMiss":
 				animName = "singLEFTMiss"
+	
+	if (hasAlt):
+		if (useAlt):
+			if (animName != get_idle_anim()):
+				animName += "-alt"
 	
 	$AnimationPlayer.play(animName)
 	

@@ -19,6 +19,8 @@ var holdNote = false
 var wasHit = false
 var held = false
 
+var mine = false
+
 var key = "left"
 
 onready var holdSprs = {
@@ -53,12 +55,18 @@ func _ready():
 	if (sustain_length > 0):
 		holdNote = true
 	
+	if (mine):
+		$Sprite.modulate = Color.black
+	
 func _on_Tween_tween_completed(_object, _key):
 	if (strum_lane != null):
 		if (missed):
-			note_miss(true)
+			if (!mine):
+				note_miss(true)
+			else:
+				queue_free()
 		
-		if (!must_hit || Settings.botPlay):
+		if (!must_hit && !mine || Settings.botPlay && !mine):
 			note_hit(0)
 		else:
 			missed = true
@@ -73,7 +81,10 @@ func note_hit(timing):
 	animPlayer.play("hit")
 	
 	if (!wasHit):
-		playState.on_hit(must_hit, note_type, timing)
+		if (!mine):
+			playState.on_hit(must_hit, note_type, timing)
+		else:
+			note_miss(false)
 	
 	if (!holdNote):
 		queue_free()
@@ -92,7 +103,8 @@ func note_miss(passed):
 func _process(_delta):
 	if (missed && $Tween.tell() > 0.2):
 		$Tween.remove_all()
-		note_miss(true)
+		if (!mine):
+			note_miss(true)
 	
 	if (Settings.downScroll):
 		scale.y = -1
@@ -128,7 +140,7 @@ func _process(_delta):
 		character.idleTimer = 0.2
 		
 		var animName = playState.player_sprite(note_type, "")
-		if (character.get_node("AnimationPlayer").get_current_animation_position() >= 0.15):
+		if (character.get_node("AnimationPlayer").get_current_animation_position() >= 0.18):
 			character.play(animName)
 		
 		if (must_hit && !Settings.botPlay):

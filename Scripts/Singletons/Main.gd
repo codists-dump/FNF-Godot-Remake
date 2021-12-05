@@ -14,6 +14,12 @@ const CHARACTERS = {
 	"dad": preload("res://Scenes/Objects/Characters/Dad.tscn"),
 	"spooky": preload("res://Scenes/Objects/Characters/Spooky_Kids.tscn"),
 	"pico": preload("res://Scenes/Objects/Characters/Pico.tscn"),
+	"mom": preload("res://Scenes/Objects/Characters/Mom.tscn"),
+	
+	"bf-car": preload("res://Scenes/Objects/Characters/Boyfriend-Car.tscn"),
+	"mom-car": preload("res://Scenes/Objects/Characters/Mom-Car.tscn"),
+	
+	"parents-christmas": preload("res://Scenes/Objects/Characters/Parents-Christmas.tscn"),
 	
 	"codist": preload("res://Scenes/Objects/Characters/Mods/Codist.tscn")
 }
@@ -21,6 +27,8 @@ const CHARACTERS = {
 var difficultys = ["EASY", "NORMAL", "HARD"]
 
 var mobileMode = false
+var forcePlayer1 = null
+var forcePlayer2 = null
 
 func _ready():
 	pause_mode = Node.PAUSE_MODE_PROCESS
@@ -62,7 +70,10 @@ func change_playstate(song, difficulty, speed = 1):
 	scene.difficulty = difficulty
 	scene.speed = speed
 	
-	player1 = CHARACTERS['pico']
+	if (forcePlayer1 != null):
+		player1 = CHARACTERS[forcePlayer1]
+	if (forcePlayer2 != null):
+		player2 = CHARACTERS[forcePlayer2]
 	
 	if (player1 != null):
 		scene.PlayerCharacter = player1

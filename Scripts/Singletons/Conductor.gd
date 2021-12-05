@@ -42,6 +42,8 @@ var songPositionMulti = 0
 var noteThread
 var notesFinished = false
 
+var chartType = null
+
 func _ready():
 	var streams = get_tree().current_scene.get_node("Music")
 	MusicStream = streams.get_node("MusicStream")
@@ -132,6 +134,11 @@ func play_chart(song, difficulty, speed = 1):
 	countdown = 2.8
 	useCountdown = true
 	
+	if (songData.has("type")):
+		chartType = songData["type"]
+	else:
+		chartType = null
+	
 	var countDownOffset = get_tree().current_scene.current_scene.notes[0][0] - ((countdown / (bpm / 60)) * 2)
 	if (countDownOffset < 0):
 		countdown -= countDownOffset
@@ -154,7 +161,12 @@ func create_notes():
 	
 	for section in songData["notes"]:
 		var section_time = (((60 / bpm) / 4) * 16) * sections.size()
-		var sectionData = [section_time, section["mustHitSection"]]
+		
+		var altAnim = false
+		if ("altAnim" in section.keys()):
+			altAnim = true
+		
+		var sectionData = [section_time, section["mustHitSection"], altAnim]
 		
 		sections.append(sectionData)
 		
@@ -162,6 +174,10 @@ func create_notes():
 			var strum_time = (note[0] + Settings.offset) / 1000
 			var sustain_length = int(note[2]) / 1000.0
 			var direction = int(note[1])
+			
+			var arg3 = null
+			if (len(note) > 3):
+				arg3 = note[3] # legit could be anything at this fucking point (mainly used for psych notes)
 
 			if (!section["mustHitSection"]):
 				if (direction <= 3):
@@ -169,7 +185,7 @@ func create_notes():
 				else:
 					direction -= 4
 					
-			var noteData = [strum_time, direction, sustain_length]
+			var noteData = [strum_time, direction, sustain_length, arg3]
 			
 			if (last_note != null):
 #				if (last_note[0] == strum_time):

@@ -68,6 +68,9 @@ func setup_song_info():
 	var infoString = ""
 	if (songData.has("song")):
 		infoString += str(songData["song"]) + "\n"
+		
+	infoString += "\n"	
+		
 	if (songData.has("bpm")):
 		infoString += "BPM: " + str(songData["bpm"]) + "\n"
 	if (songData.has("speed")):
@@ -81,6 +84,11 @@ func setup_song_info():
 		infoString += "PLR: " + str(songData["player1"]) + "\n"
 	if (songData.has("player2")):
 		infoString += "ENMY: " + str(songData["player2"]) + "\n"
+		
+	infoString += "\n"	
+		
+	if (songData.has("type")):
+		infoString += "TYPE: " + str(songData["type"]) + "\n"
 		
 	infoLabel.text = infoString
 

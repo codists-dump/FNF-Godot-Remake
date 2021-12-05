@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/Inst.ogg-97fffccc67e8fab7e71cd947d44b86ec.oggstr"
+
+[deps]
+
+source_file="res://Assets/Songs/triple-trouble/Inst.ogg"
+dest_files=[ "res://.import/Inst.ogg-97fffccc67e8fab7e71cd947d44b86ec.oggstr" ]
+
+[params]
+
+loop=false
+loop_offset=0

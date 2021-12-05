@@ -3,7 +3,7 @@ extends Node2D
 # constants
 # hit timings and windows
 # {rating name: [min ms, score]}
-const HIT_TIMINGS = {"shit": [180, 50], "bad": [135, 100], "good": [102, 200], "sick": [45, 350]}
+const HIT_TIMINGS = {"shit": [180, 50, 0.25], "bad": [135, 100, 0.50], "good": [102, 200, 0.75], "sick": [45, 350, 1]}
 
 # preloading nodes
 const PAUSE_SCREEN = preload("res://Scenes/States/PlayState/PauseMenu.tscn")
@@ -39,7 +39,8 @@ var misses = 0
 var realMisses = 0
 var combo = 0
 
-var hitNotesArray = [] # all hit note timings
+var totalHitNotes = 0
+var hitNotes = 0
 
 # arrays holding the waiting for notes and sections
 var notes
@@ -179,8 +180,9 @@ func spawn_notes():
 		var strum_time = note[0]
 		var direction = note[1]
 		var sustain_length = note[2]
+		var arg3 = note[3]
 		
-		spawn_note(direction, strum_time, sustain_length)
+		spawn_note(direction, strum_time, sustain_length, arg3)
 		
 func get_section():
 	if (sections == null || sections.empty()):
@@ -201,6 +203,8 @@ func get_section():
 		else:
 			if (EnemyCharacter != null):
 				character = EnemyCharacter
+				
+		EnemyCharacter.useAlt = section[2]
 		
 		if (character != null):
 			if (character.flipX):
@@ -208,7 +212,7 @@ func get_section():
 			else:
 				$Camera.position = character.position + Vector2(-character.camOffset.x, character.camOffset.y)
 
-func spawn_note(dir, strum_time, sustain_length):
+func spawn_note(dir, strum_time, sustain_length, arg3):
 	if (dir > 7):
 		dir = 7
 	if (dir < 0):
@@ -241,6 +245,12 @@ func spawn_note(dir, strum_time, sustain_length):
 		note.strum_time = strum_time
 		note.sustain_length = sustain_length
 		note.note_type = dir
+		
+		if (arg3 != null):
+			if (Conductor.chartType == "PSYCH"):
+				if (arg3 == "Hurt Note"):
+					note.mine = true
+					note.sustain_length = 0
 		
 		if (strumLine == PlayerStrum):
 			note.must_hit = true
@@ -293,7 +303,8 @@ func on_hit(must_hit, note_type, timing):
 		health += 1.5
 		combo += 1
 		
-		hitNotesArray.append(timing)
+		hitNotes += timingData[2]
+		totalHitNotes += 1
 		
 		create_rating(HIT_TIMINGS.keys().find(rating))
 		
@@ -391,14 +402,14 @@ func health_bar_process():
 	
 	var accuracyString = "N/A"
 	var letterRating = ""
-	if (!hitNotesArray.empty()):
-		var totalNotes = float(hitNotesArray.size() + realMisses)
-		var accuracy = round((float(hitNotesArray.size()) / totalNotes) * 100)
+	if (hitNotes > 0):
+		var totalNotes = float(totalHitNotes + realMisses)
+		var accuracy = round((float(hitNotes) / totalNotes) * 10000) / 100
 		
 		accuracyString = str(accuracy) + "%"
 		letterRating = " [" + get_letter_rating(accuracy) + "]"
 	
-	$HUD/TextBar.text = "Health: " + str(health) + "% | Score: " + str(score) + " | Misses: " + str(misses + realMisses) + " | " + accuracyString + letterRating
+	$HUD/TextBar.text = "Score: " + str(score) + " | Misses: " + str(misses + realMisses) + " | " + accuracyString + letterRating
 	$HUD/Debug/Rating.text = str(combo)
 	
 	$HUD/Background.color.a = Settings.backgroundOpacity
@@ -406,17 +417,21 @@ func health_bar_process():
 func get_letter_rating(accuracy):
 	var letterRatings = {"A+": 95, "A": 85, "B+": 77.5, "B": 72.5, "C+": 67.5, "C": 62.5, "D+": 57.5, "D": 52.5, "E": 45, "F": 20}
 	
-	if (realMisses == 0):
-		return "FC"
-	
 	var chosenRating = letterRatings.keys()[letterRatings.keys().size()-1]
+	var prefix = ""
 	
 	for rating in letterRatings.keys():
 		if (accuracy >= letterRatings[rating]):
 			chosenRating = rating
 			break
 	
-	return chosenRating
+	if (realMisses == 0):
+		if (totalHitNotes == hitNotes):
+			prefix = " | MFC"
+		else:
+			prefix = " | FC"
+	
+	return chosenRating + prefix
 
 func icon_bop():
 	$HUD/HealthBar/Icons/AnimationPlayer.play("Bop")
