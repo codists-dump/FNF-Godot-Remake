@@ -61,7 +61,7 @@ __meta__ = {
 }
 
 [node name="InfoBox" type="ColorRect" parent="CanvasLayer"]
-margin_left = 939.0
+margin_left = 911.0
 margin_top = 100.0
 margin_right = 1268.0
 margin_bottom = 477.0
@@ -85,8 +85,33 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="InfoBox2" type="ColorRect" parent="CanvasLayer"]
+margin_left = 961.0
+margin_top = 661.0
+margin_right = 1268.0
+margin_bottom = 703.0
+color = Color( 0, 0, 0, 0.486275 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="CanvasLayer/InfoBox2"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 5.0
+margin_top = 5.0
+margin_right = -5.0
+margin_bottom = -5.0
+custom_fonts/font = ExtResource( 5 )
+text = "101 SONGS"
+align = 2
+clip_text = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
 [node name="Icons" type="Node2D" parent="CanvasLayer"]
-position = Vector2( 1100, 584 )
+position = Vector2( 1172, 488 )
 scale = Vector2( 1.4, 1.4 )
 
 [node name="Enemy" type="Sprite" parent="CanvasLayer/Icons"]

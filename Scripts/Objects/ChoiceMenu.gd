@@ -2,6 +2,7 @@ extends Node2D
 class_name ChoiceMenu
 
 signal option_selected(selected)
+signal move_option(selected)
 
 const FONT = preload("res://Assets/Other/Fonts/font_alphabet.tres")
 
@@ -9,6 +10,9 @@ export var options = ["OPTION1", "OPTION2", "OPTION3"]
 export var optionOffset = Vector2(20, 145)
 
 export var enabled = true
+
+export var useIcons = false
+export var optionIcons = []
 
 onready var moveStream = AudioStreamPlayer.new()
 
@@ -45,12 +49,22 @@ func draw_options():
 			color.a = 0.6
 		if (!enabled):
 			color = Color.webgray
+			
+		var posNew = Vector2((sIdx * optionsOffset.x) + 70, (sIdx * optionsOffset.y) + 320) + offset
 		
-		draw_string(FONT, position + Vector2((sIdx * optionsOffset.x) + 70, (sIdx * optionsOffset.y) + 320) + offset, option.to_upper(), color)
+		draw_string(FONT, position + posNew, option.to_upper(), color)
+		
+		if (useIcons):
+			if (len(optionIcons) >= idx):
+				if (optionIcons[idx] != null):
+					draw_texture(optionIcons[idx], position + posNew + Vector2(option.length()*55, -30))
+		
 		idx += 1
 
 func move_option():
 	var move = int(Input.is_action_just_pressed("down")) - int(Input.is_action_just_pressed("up"))
+	if (Input.is_key_pressed(KEY_SHIFT)):
+		move *= 5
 	selected += move
 	
 	if (selected > options.size() - 1):
@@ -62,4 +76,5 @@ func move_option():
 		
 	if (move != 0):
 		offset = Vector2(optionsOffset.x * move, optionsOffset.y * move)
+		emit_signal("move_option", selected)
 		moveStream.play()

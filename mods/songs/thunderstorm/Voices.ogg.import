@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/Voices.ogg-f54bf06937d7cde4a1e94a554baa346f.oggstr"
+
+[deps]
+
+source_file="res://mods/songs/thunderstorm/Voices.ogg"
+dest_files=[ "res://.import/Voices.ogg-f54bf06937d7cde4a1e94a554baa346f.oggstr" ]
+
+[params]
+
+loop=false
+loop_offset=0

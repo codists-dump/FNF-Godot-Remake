@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/Inst.ogg-cb0a3a106fd61b3ab507b9f99a41ab22.oggstr"
+
+[deps]
+
+source_file="res://mods/songs/killer-scream/Inst.ogg"
+dest_files=[ "res://.import/Inst.ogg-cb0a3a106fd61b3ab507b9f99a41ab22.oggstr" ]
+
+[params]
+
+loop=false
+loop_offset=0

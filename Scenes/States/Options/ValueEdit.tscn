@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://Assets/Other/Fonts/font_alphabet.tres" type="BitmapFont" id=1]
 [ext_resource path="res://Assets/Other/Fonts/vcr.ttf" type="DynamicFontData" id=2]
 [ext_resource path="res://Scripts/States/Options/ValueEdit.gd" type="Script" id=3]
+[ext_resource path="res://Scripts/States/Options/ValueEditDraw.gd" type="Script" id=4]
 
 [sub_resource type="StyleBoxFlat" id=2]
 bg_color = Color( 0, 0, 0, 1 )
@@ -75,6 +76,7 @@ custom_fonts/font = SubResource( 1 )
 text = "NAME"
 align = 1
 valign = 1
+autowrap = true
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -107,3 +109,10 @@ valign = 1
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="FileDialog" type="FileDialog" parent="."]
+margin_right = 315.0
+margin_bottom = 130.0
+
+[node name="Draw" type="Node2D" parent="."]
+script = ExtResource( 4 )

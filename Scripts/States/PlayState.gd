@@ -15,7 +15,13 @@ const MISS_SOUNDS = [preload("res://Assets/Sounds/missnote1.ogg"),
 const RATING_SCENE = preload("res://Scenes/States/PlayState/Rating.tscn")
 
 # notes
-const NOTE_NODE = preload("res://Scenes/States/PlayState/Note.tscn")
+const NOTES = {
+				"": preload("res://Scenes/States/PlayState/Notes/Note.tscn"),
+				"mine": preload("res://Scenes/States/PlayState/Notes/NoteMine.tscn"),
+				"warn": preload("res://Scenes/States/PlayState/Notes/NoteWarn.tscn")
+			}
+const NOTE_SPLASH = preload("res://Scenes/States/PlayState/NoteSplash.tscn")
+
 enum Note {Left, Down, Up, Right}
 
 var rng = RandomNumberGenerator.new() # rng stuff for miss sounds in particular
@@ -24,9 +30,9 @@ var rng = RandomNumberGenerator.new() # rng stuff for miss sounds in particular
 export (NodePath) var PlayerStrumPath
 export (NodePath) var EnemyStrumPath
 
-export (PackedScene) var PlayerCharacter
-export (PackedScene) var EnemyCharacter
-export (PackedScene) var GFCharacter
+export (String) var PlayerCharacter
+export (String) var EnemyCharacter
+export (String) var GFCharacter
 
 export (String) var song = "no-villains"
 export (String) var difficulty = "hard"
@@ -70,7 +76,7 @@ func _ready():
 	# i might just remove the playstate entirely for this process, and only use the conductor
 	Conductor.play_chart(song, difficulty, speed)
 	
-	var _c_beat = Conductor.connect("beat_hit", self, "icon_bop") # connect the beat hit signal to the icon bop
+	var _c_beat = Conductor.connect("beat_hit", self, "hud_bop") # connect the beat hit signal to the icon bop
 
 func _process(_delta):
 	player_input() # handle the players input
@@ -86,6 +92,9 @@ func _process(_delta):
 	
 	# process health bar stuff, like positions
 	health_bar_process()
+	
+	if (Conductor.notesFinished):
+		song_finished_check()
 
 func player_input():
 	if (PlayerStrum == null || Settings.botPlay):
@@ -225,7 +234,19 @@ func spawn_note(dir, strum_time, sustain_length, arg3):
 		dir -= 4
 	
 	if (strumLine != null):
-		var note = NOTE_NODE.instance()
+		var curNote = ""
+		
+		if (arg3 != null):
+			if (Conductor.chartType == "PSYCH"):
+				match arg3:
+					"Hurt Note":
+						curNote = "mine"
+					"halfBlammed Note":
+						curNote = "warn"
+					_:
+						return
+		
+		var note = NOTES[curNote].instance()
 		
 		var spawn_lane
 		match dir:
@@ -246,12 +267,6 @@ func spawn_note(dir, strum_time, sustain_length, arg3):
 		note.sustain_length = sustain_length
 		note.note_type = dir
 		
-		if (arg3 != null):
-			if (Conductor.chartType == "PSYCH"):
-				if (arg3 == "Hurt Note"):
-					note.mine = true
-					note.sustain_length = 0
-		
 		if (strumLine == PlayerStrum):
 			note.must_hit = true
 		
@@ -265,7 +280,7 @@ func on_hit(must_hit, note_type, timing):
 	if (character != null):
 		var animName = player_sprite(note_type, "")
 		character.play(animName)
-		character.idleTimer = 0.5
+		character.idleTimer = 0.2
 		
 		if (Settings.cameraMovement):
 			if (must_hit && must_hit_section || !must_hit && !must_hit_section):
@@ -295,16 +310,50 @@ func on_hit(must_hit, note_type, timing):
 			
 	if (must_hit):
 		var rating = get_rating(timing)
-		
-		$HUD/Debug/RatingMS.text = str(round(timing)) + "MS"
-		
+
 		var timingData = HIT_TIMINGS[rating]
 		score += timingData[1]
 		health += 1.5
+		
+		if (combo < 0):
+			combo = 0
 		combo += 1
 		
 		hitNotes += timingData[2]
 		totalHitNotes += 1
+		
+		if (rating == "sick"):
+			var splash = NOTE_SPLASH.instance()
+			var num = rng.randi_range(0, 1)
+			var anim = "Left"
+			
+			var color
+			
+			match note_type:
+				Note.Left:
+					anim = "Left"
+					color = Settings.noteColorLeft
+				Note.Down:
+					anim = "Down"
+					color = Settings.noteColorDown
+				Note.Up:
+					anim = "Up"
+					color = Settings.noteColorUp
+				Note.Right:
+					anim = "Right"
+					color = Settings.noteColorRight
+			
+			splash.position = PlayerStrum.position + PlayerStrum.get_node("Buttons/" + anim).position
+			
+			if (Settings.customNoteColors):
+				anim = "Desat"
+				splash.self_modulate = color
+				splash.get_node("Overlay").visible = true
+				splash.get_node("Overlay").play(str(num))
+			
+			splash.play(anim.to_lower() + str(num))
+			
+			$HUD.add_child(splash)
 		
 		create_rating(HIT_TIMINGS.keys().find(rating))
 		
@@ -319,8 +368,6 @@ func on_miss(must_hit, note_type, passed = false):
 		var animName = player_sprite(note_type, "Miss")
 		character.play(animName)
 	
-	$HUD/Debug/RatingMS.text = ""
-	
 	var random = rng.randi_range(0, MISS_SOUNDS.size()-1)
 	$Audio/MissStream.stream = MISS_SOUNDS[random]
 	$Audio/MissStream.play()
@@ -332,7 +379,13 @@ func on_miss(must_hit, note_type, passed = false):
 	else:
 		realMisses += 1
 		Conductor.muteVocals = true
-	combo = 0
+	
+	if (combo > 0):
+		combo = 0
+	combo -= 1
+	
+	if (Settings.hudRatingsMiss):
+		create_rating(-1)
 
 func get_rating(timing):
 	# get the last rating in the array and set it to the default (the last rating is the best)
@@ -410,7 +463,6 @@ func health_bar_process():
 		letterRating = " [" + get_letter_rating(accuracy) + "]"
 	
 	$HUD/TextBar.text = "Score: " + str(score) + " | Misses: " + str(misses + realMisses) + " | " + accuracyString + letterRating
-	$HUD/Debug/Rating.text = str(combo)
 	
 	$HUD/Background.color.a = Settings.backgroundOpacity
 		
@@ -433,18 +485,18 @@ func get_letter_rating(accuracy):
 	
 	return chosenRating + prefix
 
-func icon_bop():
+func hud_bop():
 	$HUD/HealthBar/Icons/AnimationPlayer.play("Bop")
 
 func setup_characters():
 	if (GFCharacter != null):
-		GFCharacter = GFCharacter.instance()
+		GFCharacter = Main.create_character(GFCharacter)
 		$Characters.add_child(GFCharacter)
 		
 		GFCharacter.position = $Positions/Girlfriend.position
 	
 	if (EnemyCharacter != null):
-		EnemyCharacter = EnemyCharacter.instance()
+		EnemyCharacter = Main.create_character(EnemyCharacter)
 		$Characters.add_child(EnemyCharacter)
 		
 		if (EnemyCharacter.girlfriendPosition):
@@ -457,7 +509,7 @@ func setup_characters():
 		$HUD/HealthBar.tint_under = EnemyCharacter.characterColor
 	
 	if (PlayerCharacter != null):
-		PlayerCharacter = PlayerCharacter.instance()
+		PlayerCharacter = Main.create_character(PlayerCharacter)
 		$Characters.add_child(PlayerCharacter)
 		
 		if (PlayerCharacter.girlfriendPosition):
@@ -508,8 +560,12 @@ func setup_strums():
 
 func create_rating(rating):
 	var ratingObj = RATING_SCENE.instance()
-	ratingObj.get_node("Sprite").frame = rating
+	ratingObj.get_node("Sprite").frame = rating+1
+	ratingObj.combo = combo
 	
+#	if (totalHitNotes == hitNotes):
+#		ratingObj.modulate = Color.gold
+
 	if (!Settings.hudRatings):
 		ratingObj.position = $Positions/Rating.position
 		$Ratings.add_child(ratingObj)
@@ -520,3 +576,13 @@ func create_rating(rating):
 
 func restart_playstate():
 	Main.change_playstate(song, difficulty, speed)
+
+func song_finished_check():
+	if (MusicStream.get_playback_position() >= MusicStream.stream.get_length()):
+		Conductor.save_score(Conductor.songName, score)
+		
+		var menuSong = load("res://Assets/Music/freakyMenu.ogg")
+		if (Conductor.MusicStream.stream != menuSong):
+			Conductor.play_song(menuSong, 102, 1)
+		
+		Main.change_scene("res://Scenes/States/FreePlayState.tscn")

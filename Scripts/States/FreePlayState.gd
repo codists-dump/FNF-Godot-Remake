@@ -5,6 +5,9 @@ var lastSelected = -1
 var selectedDifficulty = 2
 var selectedSpeed = 1
 
+var scoreSelect = 0
+var curScore = 0
+
 var songData
 
 var character1
@@ -40,27 +43,24 @@ func _process(_delta):
 		
 	lastSelected = $CanvasLayer/ChoiceMenu.selected
 	
+	curScore = lerp(curScore, scoreSelect, 10 * _delta)
+	
+	var displayScore = str("%08d" % round(curScore))
+	$CanvasLayer/SettingsBox/Score.text = displayScore
 	$CanvasLayer/SettingsBox/Label.text = "< " + Main.difficultys[selectedDifficulty] + " >\n" + str(selectedSpeed) + "x"
+	var songsMenu = $CanvasLayer/ChoiceMenu
+	$CanvasLayer/InfoBox2/Label.text = str(songsMenu.selected+1) + "/" + str(len(songsMenu.options)) + " SONGS"
 
 func get_songs():
 	var songsMenu = $CanvasLayer/ChoiceMenu
 	songsMenu.optionOffset.y = 120
 	songsMenu.options = []
 	
-	var dir = Directory.new()
-	dir.open("res://Assets/Songs/")
+	get_freeplay_songs("res://Assets/Songs/")
 	
-	dir.list_dir_begin()
-	while true:
-		var file = dir.get_next()
-		if file == "":
-			break
-		elif not file.begins_with("."):
-			songsMenu.options.append(file)
-			loadedJsons[file] = Conductor.load_song_json(file)
-			loadedSongs[file] = load("res://Assets/Songs/" + file + "/Inst.ogg")
-			
-	songsMenu.options.sort()
+	var dir = Directory.new()
+	if (dir.dir_exists(Mods.songsDir)):
+		get_freeplay_songs(Mods.songsDir)
 	
 func setup_song_info():
 	var infoLabel = $CanvasLayer/InfoBox/Label
@@ -95,7 +95,11 @@ func setup_song_info():
 func song_selected(option):
 	var songName = $CanvasLayer/ChoiceMenu.options[option]
 	songData = loadedJsons[songName]
-	Conductor.play_song(loadedSongs[songName], songData["bpm"])
+	
+	if (loadedSongs.has(songName)):
+		Conductor.play_song(loadedSongs[songName], songData["bpm"])
+		
+	scoreSelect = Conductor.load_score(songName)
 	
 	var player1 = "test"
 	var player2 = "test"
@@ -107,12 +111,15 @@ func song_selected(option):
 	
 	if (character1 != null):
 		character1.queue_free()
-	character1 = Main.CHARACTERS[player1].instance()
+	
+	character1 = Main.create_character(player1)
+	character1.setup_character()
 	$CanvasLayer/Icons/Player.texture = character1.iconSheet
 	
 	if (character2 != null):
 		character2.queue_free()
-	character2 = Main.CHARACTERS[player2].instance()
+	character2 = Main.create_character(player2)
+	character2.setup_character()
 	$CanvasLayer/Icons/Enemy.texture = character2.iconSheet
 	
 	setup_song_info()
@@ -122,3 +129,22 @@ func song_chosen(option):
 	var difficulty = Main.difficultys[selectedDifficulty].to_lower()
 	
 	Main.change_playstate(songName, difficulty, selectedSpeed)
+
+func get_freeplay_songs(directory):
+	var songsMenu = $CanvasLayer/ChoiceMenu
+	
+	var dir = Directory.new()
+	dir.open(directory)
+	
+	dir.list_dir_begin()
+	while true:
+		var file = dir.get_next()
+		if file == "":
+			break
+		elif not file.begins_with("."):
+			songsMenu.options.append(file)
+			loadedJsons[file] = Conductor.load_song_json(file)
+			
+			if (Settings.freeplaySongPreview):
+				var newDir = directory + "/" + file + "/Inst.ogg"
+				loadedSongs[file] = Mods.mod_ogg(newDir)

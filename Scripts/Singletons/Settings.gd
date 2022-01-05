@@ -6,7 +6,10 @@ var hitSounds = false # play a sound when the player hits a note
 
 var hudRatings = false # display ratings on the hud layer
 var hudRatingsOffset = Vector2(640, 360) # if its a hud rating, move it by this offset
+var hudRatingsMiss = false
 var backgroundOpacity = 0
+
+var fpsCap = 120
 
 var middleScroll = false
 var middleScrollPreview = false
@@ -16,8 +19,17 @@ var cameraMovement = true
 
 var offset = 0
 
+var freeplaySongPreview = true
+
+var customNoteColors = false
+var noteColorLeft = Color.red
+var noteColorDown = Color.blue
+var noteColorUp = Color.orange
+var noteColorRight = Color.yellow
+
 func _ready():
 	load_settings()
+	update_settings()
 
 func save_settings():
 	var file = ConfigFile.new()
@@ -30,6 +42,7 @@ func save_settings():
 	file.save("user://settings.ini")
 	
 	save_keybinds()
+	update_settings()
 	
 func save_keybinds():
 	var file = ConfigFile.new()
@@ -72,3 +85,6 @@ func load_keybinds():
 		
 		InputMap.action_erase_event(action, keys[keys.size()-1])
 		InputMap.action_add_event(action, key)
+
+func update_settings():
+	Engine.set_target_fps(fpsCap)

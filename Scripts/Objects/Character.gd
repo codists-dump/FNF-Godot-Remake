@@ -60,7 +60,8 @@ func play(animName):
 			if (animName != get_idle_anim()):
 				animName += "-alt"
 	
-	$AnimationPlayer.play(animName)
+	if ($AnimationPlayer.has_animation(animName)):
+		$AnimationPlayer.play(animName)
 	
 func idle_dance():
 	if (get_idle_anim() == "idle"):
@@ -105,3 +106,6 @@ func get_idle_anim():
 			return "danceLEFT"
 	
 	return "idle"
+
+func setup_character():
+	pass

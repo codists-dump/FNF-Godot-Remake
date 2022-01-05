@@ -9,6 +9,7 @@ var specialType = null
 var keyMode = false
 
 var waitTime = 0
+var popup
 
 func _process(_delta):
 	if (!visible):
@@ -24,14 +25,19 @@ func _process(_delta):
 		return
 		
 	if (Input.is_action_just_pressed("confirm")):
-		Settings.set(valueData[0], valueEditing)
-		close()
+		set_option()
 	
 	if (Input.is_action_just_pressed("cancel")):
 		optionsMenu.get_node("Sounds/CancelStream").play()
 		close()
 		
 func _input(event):
+	if (valueEditing is Color):
+		if (popup != null):
+			var sprite = popup.get_node("NoteSprite")
+			var picker = popup.get_node("ColorPicker")
+			sprite.modulate = picker.color
+	
 	if (!visible):
 		return
 	
@@ -75,6 +81,10 @@ func change_value():
 			multi = 10
 			
 		valueEditing += move * multi
+		
+		if (specialType == "fps"):
+			if (valueEditing < 0):
+				valueEditing = 0
 	
 	if (valueEditing is Vector2):
 		var moveRL = int(Input.is_action_just_pressed("right")) - int(Input.is_action_just_pressed("left"))
@@ -87,6 +97,10 @@ func change_value():
 		valueEditing.y += moveDU * multi
 			
 	$Value.text = str(fakeValue) + ext
+	
+func set_option():
+	Settings.set(valueData[0], valueEditing)
+	close()
 
 func close():
 	optionsMenu.get_options()
@@ -119,6 +133,47 @@ func change_other():
 			$ValueInfo.text = "USE LEFT AND RIGHT\nSHIFT TO MOVE BY 10"
 		if (valueEditing is Vector2):
 			$ValueInfo.text = "USE ARROW KEYS\nSHIFT TO MOVE BY 10"
+		if (valueEditing is Color):
+			popup = AcceptDialog.new()
+			
+			popup.connect("popup_hide", self, "color_selected")
+			
+			var colorPicker = ColorPicker.new()
+			colorPicker.edit_alpha = false
+			colorPicker.color = valueEditing
+			colorPicker.name = "ColorPicker"
+			
+			colorPicker.add_preset(Color.red)
+			colorPicker.add_preset(Color.orange)
+			colorPicker.add_preset(Color.yellow)
+			colorPicker.add_preset(Color.green)
+			colorPicker.add_preset(Color.blue)
+			colorPicker.add_preset(Color.indigo)
+			colorPicker.add_preset(Color.violet)
+			colorPicker.add_preset(Color.white)
+			colorPicker.add_preset(Color.black)
+			
+			popup.add_child(colorPicker, true)
+			
+			var image = Sprite.new()
+			image.texture = load("res://Assets/Sprites/Notes/Desat_Note_Sprites.png")
+			image.name = "NoteSprite"
+			image.vframes = 4
+			image.position = Vector2(-100, 200)
+			popup.add_child(image, true)
+			
+			var overlay = Sprite.new()
+			overlay.texture = load("res://Assets/Sprites/Notes/Desat_Note_Sprites_Overlay.png")
+			overlay.vframes = image.vframes
+			overlay.position = image.position
+			popup.add_child(overlay, true)
+			
+			get_tree().current_scene.add_child(popup)
+			popup.popup_centered()
+			
+			visible = false
+			
+			$ValueInfo.text = ""
 		else:
 			$ValueInfo.text = "USE LEFT AND RIGHT"
 	else:
@@ -126,3 +181,19 @@ func change_other():
 			"key":
 				keyMode = true
 				$ValueInfo.text = "PRESS ANY KEY"
+			"directory":
+				$ValueInfo.text = ""
+			"fps":
+				$ValueInfo.text = "USE LEFT AND RIGHT\n0 IS UNLIMITED"
+
+# color stuff
+func color_selected():
+	var picker = popup.get_node("ColorPicker")
+	valueEditing = picker.color
+	
+	set_option()
+	popup_hide()
+
+func popup_hide():
+	popup.queue_free()
+	popup = null

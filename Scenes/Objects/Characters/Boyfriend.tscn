@@ -1,8 +1,55 @@
-[gd_scene load_steps=13 format=2]
+[gd_scene load_steps=16 format=2]
 
 [ext_resource path="res://Scripts/Objects/Character.gd" type="Script" id=1]
 [ext_resource path="res://Assets/Sprites/Characters/bf_sheet.png" type="Texture" id=2]
 [ext_resource path="res://Assets/Sprites/Characters/Icons/icon-bf.png" type="Texture" id=3]
+
+[sub_resource type="Animation" id=13]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 28 ]
+}
+
+[sub_resource type="Animation" id=14]
+resource_name = "dodge"
+step = 0.05
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85 ),
+"transitions": PoolRealArray( 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ),
+"update": 1,
+"values": [ 28, 29, 30, 31, 32, 33, 31, 32, 33, 31, 32, 33, 31, 32, 33, 31, 32, 33 ]
+}
+
+[sub_resource type="Animation" id=15]
+resource_name = "hit"
+step = 0.05
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95 ),
+"transitions": PoolRealArray( 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ),
+"update": 1,
+"values": [ 34, 35, 36, 37, 38, 39, 40, 41, 40, 41, 40, 41, 40, 41, 40, 41, 40, 41, 40, 41 ]
+}
 
 [sub_resource type="Animation" id=1]
 resource_name = "idle"
@@ -159,11 +206,14 @@ characterColor = Color( 0.192157, 0.690196, 0.819608, 1 )
 position = Vector2( 0, -152 )
 texture = ExtResource( 2 )
 hframes = 10
-vframes = 3
-frame = 2
+vframes = 5
+frame = 28
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 autoplay = "idle"
+anims/RESET = SubResource( 13 )
+anims/dodge = SubResource( 14 )
+anims/hit = SubResource( 15 )
 anims/idle = SubResource( 1 )
 anims/singDOWN = SubResource( 2 )
 anims/singDOWNMiss = SubResource( 10 )

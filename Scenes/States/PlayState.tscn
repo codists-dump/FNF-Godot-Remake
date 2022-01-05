@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://Assets/Other/Fonts/vcr.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://Scripts/States/PlayState.gd" type="Script" id=2]
@@ -47,22 +47,13 @@ outline_size = 2
 outline_color = Color( 0, 0, 0, 1 )
 font_data = ExtResource( 1 )
 
-[sub_resource type="DynamicFont" id=1]
-size = 80
-outline_size = 2
-outline_color = Color( 0, 0, 0, 1 )
-font_data = ExtResource( 1 )
-
-[sub_resource type="DynamicFont" id=2]
-size = 40
-outline_size = 1
-outline_color = Color( 0, 0, 0, 1 )
-font_data = ExtResource( 1 )
-
 [node name="PlayState" type="Node2D"]
 script = ExtResource( 2 )
 PlayerStrumPath = NodePath("HUD/PlayerStrumLine")
 EnemyStrumPath = NodePath("HUD/EnemyStrumLine")
+PlayerCharacter = "bf"
+EnemyCharacter = "dad"
+GFCharacter = "gf"
 
 [node name="HUD" type="CanvasLayer" parent="."]
 scale = Vector2( 0.7, 0.7 )
@@ -135,30 +126,6 @@ margin_right = 1829.0
 margin_bottom = 1008.29
 custom_fonts/font = SubResource( 5 )
 text = "Health: 0%"
-align = 1
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Debug" type="Node2D" parent="HUD"]
-
-[node name="Rating" type="Label" parent="HUD/Debug"]
-margin_top = 86.0059
-margin_right = 1829.0
-margin_bottom = 235.006
-custom_fonts/font = SubResource( 1 )
-text = "100"
-align = 1
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="RatingMS" type="Label" parent="HUD/Debug"]
-margin_top = 166.0
-margin_right = 1829.0
-margin_bottom = 214.0
-custom_fonts/font = SubResource( 2 )
-text = "10ms"
 align = 1
 __meta__ = {
 "_edit_use_anchors_": false

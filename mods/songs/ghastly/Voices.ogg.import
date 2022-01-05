@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/Voices.ogg-3432944837ea10c0f6ced41f5aa08d18.oggstr"
+
+[deps]
+
+source_file="res://mods/songs/ghastly/Voices.ogg"
+dest_files=[ "res://.import/Voices.ogg-3432944837ea10c0f6ced41f5aa08d18.oggstr" ]
+
+[params]
+
+loop=false
+loop_offset=0

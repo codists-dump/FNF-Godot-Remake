@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/Inst.ogg-5ee32c8509d788d53cc7ead29f94fe9e.oggstr"
+
+[deps]
+
+source_file="res://mods/songs/uh/Inst.ogg"
+dest_files=[ "res://.import/Inst.ogg-5ee32c8509d788d53cc7ead29f94fe9e.oggstr" ]
+
+[params]
+
+loop=false
+loop_offset=0

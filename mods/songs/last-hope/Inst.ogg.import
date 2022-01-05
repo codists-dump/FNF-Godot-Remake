@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/Inst.ogg-13a42010a2ec43cb6f3af66edae5e88f.oggstr"
+
+[deps]
+
+source_file="res://mods/songs/last-hope/Inst.ogg"
+dest_files=[ "res://.import/Inst.ogg-13a42010a2ec43cb6f3af66edae5e88f.oggstr" ]
+
+[params]
+
+loop=false
+loop_offset=0

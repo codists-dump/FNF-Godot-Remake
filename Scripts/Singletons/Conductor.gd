@@ -71,8 +71,6 @@ func _process(delta):
 
 		if (useCountdown):
 			countdown_process(delta)
-			
-		song_finished_check()
 		
 	var countdownMulti = ((countdown / (bpm / 60)) * 2)
 	songPositionMulti = MusicStream.get_playback_position() - countdownMulti
@@ -88,6 +86,7 @@ func play_song(song, newerBpm, speed = 1):
 		MusicStream.stream = song
 	else:
 		MusicStream.stream = load(song)
+		
 	MusicStream.pitch_scale = song_speed
 	MusicStream.play()
 	
@@ -108,9 +107,9 @@ func play_chart(song, difficulty, speed = 1):
 			difExt = ""
 		"hard":
 			songDifficulty = 0
-			
-	var songPath = "res://Assets/Songs/" + songName  + "/"
-	songData = load_song_json(songName, difExt, songPath)
+	
+	songData = load_song_json(songName, difExt)
+	var songPath = songData["_dir"]
 	
 	song_speed = speed
 	change_bpm(songData["bpm"])
@@ -122,11 +121,11 @@ func play_chart(song, difficulty, speed = 1):
 		
 	create_notes()
 	
-	MusicStream.stream = load(songPath + "Inst.ogg")
+	MusicStream.stream = Mods.mod_ogg(songPath + "Inst.ogg")
 	MusicStream.pitch_scale = song_speed
 	
 	if (songData["needsVoices"]):
-		VocalStream.stream = load(songPath + "/Voices.ogg")
+		VocalStream.stream = Mods.mod_ogg(songPath + "/Voices.ogg")
 		VocalStream.pitch_scale = song_speed
 	else:
 		VocalStream.stream = null
@@ -285,15 +284,41 @@ func beat_process(delta):
 			emit_signal("half_beat_hit")
 			halfBeatCounter = 0
 
-func song_finished_check():
-	if (MusicStream.get_playback_position() >= MusicStream.stream.get_length()):
-		Main.change_to_main_menu()
+func load_song_json(song, difExt=""):
+	var songPath = "res://Assets/Songs/" + song + "/"
+	
+	var directory = Directory.new();
+	if (!directory.dir_exists(songPath)):
+		songPath = Mods.songsDir + "/" + song + "/"
+	
+	var file = File.new()	
+	var jsonPath = songPath + song + difExt + ".json"
+	
+	if (!file.file_exists(jsonPath)):
+		difExt = ""
+		jsonPath = songPath + song + difExt + ".json"
+	
+	if (!file.file_exists(jsonPath)):
+		return
+	
+	file.open(jsonPath, File.READ)
+	
+	var json = JSON.parse(file.get_as_text()).result["song"]
+	json["_dir"] = songPath
+	
+	return json
 
-func load_song_json(song, difExt="", songPath = null):
-	if (songPath == null):
-		songPath = "res://Assets/Songs/" + song  + "/"
+func save_score(songName, score):
+	var file = ConfigFile.new()
+	file.set_value("SCORES", songName, score)
+	file.save("user://data.ini")
+
+func load_score(songName):
+	var file = ConfigFile.new()
+	var err = file.load("user://data.ini")
 	
-	var file = File.new()
-	file.open(songPath + song + difExt + ".json", File.READ)
+	if err != OK:
+		return 0
 	
-	return JSON.parse(file.get_as_text()).result["song"]
+	var score = file.get_value("SCORES", songName, 0)
+	return score
