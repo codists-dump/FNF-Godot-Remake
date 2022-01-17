@@ -1,10 +1,11 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://Assets/Sprites/UI/menuBG.png" type="Texture" id=1]
 [ext_resource path="res://Scripts/States/MainMenuState.gd" type="Script" id=2]
 [ext_resource path="res://Scenes/Mobile/MobileMenuControls.tscn" type="PackedScene" id=3]
 [ext_resource path="res://Assets/Sounds/scroll_menu.ogg" type="AudioStream" id=4]
 [ext_resource path="res://Assets/Sounds/confirm_menu.ogg" type="AudioStream" id=5]
+[ext_resource path="res://Assets/Sounds/cancel_menu.ogg" type="AudioStream" id=6]
 
 [node name="MainMenuState" type="Node2D"]
 script = ExtResource( 2 )
@@ -30,6 +31,9 @@ stream = ExtResource( 4 )
 
 [node name="ConfirmStream" type="AudioStreamPlayer" parent="Sounds"]
 stream = ExtResource( 5 )
+
+[node name="CancelStream" type="AudioStreamPlayer" parent="Sounds"]
+stream = ExtResource( 6 )
 
 [node name="Buttons" type="CanvasLayer" parent="."]
 

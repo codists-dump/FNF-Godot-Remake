@@ -2,7 +2,7 @@ extends Node2D
 
 const BUTTON_SCENE = preload("res://Scenes/States/MainMenu/MainMenuButton.tscn")
 # var options = {"story": 3, "freeplay": 1, "options": 2, "donate": 0}
-var options = {"freeplay": 1, "options": 2, "donate": 0}
+var options = {"story": 3, "freeplay": 1, "options": 2, "donate": 0}
 
 var optionsOffset = Vector2(640, 150)
 
@@ -76,6 +76,8 @@ func createMenuObjects():
 
 func option_logic(name):
 	match (name):
+		"story":
+			Main.change_scene("res://Scenes/States/StoryState.tscn")
 		"freeplay":
 			Main.change_scene("res://Scenes/States/FreePlayState.tscn")
 		"options":

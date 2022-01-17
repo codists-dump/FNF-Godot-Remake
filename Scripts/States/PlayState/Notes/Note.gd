@@ -42,7 +42,9 @@ var holdArray
 
 func _ready():
 	var songSpeed = get_tree().current_scene.current_scene.speed
+	
 	SCROLL_TIME = SCROLL_TIME / songSpeed
+	sustain_length = sustain_length / Conductor.song_speed
 	
 	playState = get_tree().current_scene.current_scene
 	

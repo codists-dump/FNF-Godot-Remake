@@ -7,7 +7,8 @@ var imageDir
 
 func _ready():
 	if !(OS.has_feature("standalone")):
-		modsFolder = "res://mods"
+		modsFolder = ""
+		#modsFolder = "res://mods"
 		
 	songsDir = modsFolder + "/songs"
 	charactersDir = modsFolder + "/characters"

@@ -13,7 +13,7 @@ onready var anim = $Transition/AnimationPlayer
 func _ready():
 	change_scene(main_scene)
 
-func change_scene(scene):
+func change_scene(scene, transition = true):
 	if (scene is Resource):
 		next_level = scene.instance()
 	elif (scene is Node):
@@ -21,19 +21,25 @@ func change_scene(scene):
 	else:
 		next_level = load(scene).instance()
 	
-	anim.play("fade_in")
+	if (transition):
+		anim.play("fade_in")
+	else:
+		finish_transition()
 
 func _on_AnimationPlayer_animation_finished(anim_name):
 	match anim_name:
 		"fade_in":
-			if (current_scene != null):
-				current_scene.queue_free()
-			
-			current_scene = next_level
-			add_child(current_scene)
-			
-			next_level = null
+			finish_transition()
 			
 			anim.play("fade_out")
-			
-			emit_signal("scene_loaded")
+
+func finish_transition():
+	if (current_scene != null):
+		current_scene.queue_free()
+	
+	current_scene = next_level
+	add_child(current_scene)
+	
+	next_level = null
+	
+	emit_signal("scene_loaded")

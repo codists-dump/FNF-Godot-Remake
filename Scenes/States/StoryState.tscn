@@ -1,0 +1,130 @@
+[gd_scene load_steps=17 format=2]
+
+[ext_resource path="res://Scenes/Mobile/MobileMenuControls.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Assets/Sprites/UI/Story/PsychEngine_GAyTmWI0fx.png" type="Texture" id=2]
+[ext_resource path="res://Scripts/States/StoryState.gd" type="Script" id=3]
+[ext_resource path="res://Assets/Sprites/UI/Story/dif-arrow.png" type="Texture" id=4]
+[ext_resource path="res://Assets/Sprites/UI/Story/dif-sheet.png" type="Texture" id=5]
+[ext_resource path="res://Assets/Other/Fonts/font.tres" type="DynamicFont" id=6]
+[ext_resource path="res://Assets/Other/Fonts/vcr.ttf" type="DynamicFontData" id=7]
+[ext_resource path="res://Assets/Sounds/cancel_menu.ogg" type="AudioStream" id=8]
+[ext_resource path="res://Assets/Sounds/confirm_menu.ogg" type="AudioStream" id=9]
+[ext_resource path="res://Scenes/States/Story/StoryCharacter.tscn" type="PackedScene" id=10]
+[ext_resource path="res://Assets/Sounds/scroll_menu.ogg" type="AudioStream" id=11]
+
+[sub_resource type="Gradient" id=1]
+offsets = PoolRealArray( 0 )
+colors = PoolColorArray( 0, 0, 0, 1 )
+
+[sub_resource type="GradientTexture" id=2]
+gradient = SubResource( 1 )
+
+[sub_resource type="Gradient" id=3]
+offsets = PoolRealArray( 0 )
+colors = PoolColorArray( 0.976471, 0.811765, 0.317647, 1 )
+
+[sub_resource type="GradientTexture" id=4]
+gradient = SubResource( 3 )
+
+[sub_resource type="DynamicFont" id=5]
+size = 30
+outline_color = Color( 0, 0, 0, 1 )
+font_data = ExtResource( 7 )
+
+[node name="StoryState" type="Node2D"]
+script = ExtResource( 3 )
+
+[node name="Background" type="Sprite" parent="."]
+position = Vector2( 640, 360 )
+scale = Vector2( 0.625, 720 )
+texture = SubResource( 2 )
+
+[node name="Buttons" type="Node2D" parent="."]
+position = Vector2( 392, 512 )
+
+[node name="Background2" type="Sprite" parent="."]
+position = Vector2( 640, 249 )
+scale = Vector2( 0.625, 386 )
+texture = SubResource( 4 )
+
+[node name="Background3" type="Sprite" parent="."]
+position = Vector2( 640, 28 )
+scale = Vector2( 0.625, 56 )
+texture = SubResource( 2 )
+
+[node name="PsychEngineGayTmWi0Fx" type="Sprite" parent="."]
+visible = false
+position = Vector2( 640, 360 )
+texture = ExtResource( 2 )
+
+[node name="DifStuff" type="Node2D" parent="."]
+position = Vector2( 700, 447 )
+
+[node name="LeftButton" type="Sprite" parent="DifStuff"]
+position = Vector2( 33.5, 64 )
+texture = ExtResource( 4 )
+
+[node name="DifSprite" type="Sprite" parent="DifStuff"]
+position = Vector2( 229.5, 64 )
+texture = ExtResource( 5 )
+vframes = 3
+frame = 1
+
+[node name="RightButton" type="Sprite" parent="DifStuff"]
+position = Vector2( 425.5, 64 )
+texture = ExtResource( 4 )
+flip_h = true
+
+[node name="StoryCharacters" type="Node2D" parent="."]
+position = Vector2( 632, 369 )
+
+[node name="BfCharacter" parent="StoryCharacters" instance=ExtResource( 10 )]
+position = Vector2( 8, -142 )
+
+[node name="GfCharacter" parent="StoryCharacters" instance=ExtResource( 10 )]
+position = Vector2( 382, -134 )
+
+[node name="DadCharacter" parent="StoryCharacters" instance=ExtResource( 10 )]
+position = Vector2( -359, -118 )
+
+[node name="Tracks" type="Label" parent="."]
+margin_left = 16.0
+margin_top = 71.0
+margin_right = 178.0
+margin_bottom = 455.0
+custom_colors/font_color = Color( 0.717647, 0.596078, 0.223529, 1 )
+custom_fonts/font = SubResource( 5 )
+text = "AWESOME
+COOL
+GAMING
+"
+valign = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="WeekName" type="Label" parent="."]
+margin_top = 12.0
+margin_right = 1280.0
+margin_bottom = 47.0
+custom_colors/font_color = Color( 0.682353, 0.682353, 0.682353, 1 )
+custom_fonts/font = ExtResource( 6 )
+text = "AWESOME WEEK NAME"
+align = 1
+clip_text = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Sounds" type="Node" parent="."]
+
+[node name="MoveStream" type="AudioStreamPlayer" parent="Sounds"]
+stream = ExtResource( 11 )
+
+[node name="ConfirmStream" type="AudioStreamPlayer" parent="Sounds"]
+stream = ExtResource( 9 )
+
+[node name="CancelStream" type="AudioStreamPlayer" parent="Sounds"]
+stream = ExtResource( 8 )
+
+[node name="MobileMenuControls" parent="." instance=ExtResource( 1 )]

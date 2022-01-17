@@ -89,7 +89,7 @@ characterColor = Color( 0.631373, 0.631373, 0.631373, 1 )
 position = Vector2( 0, -152 )
 texture = ExtResource( 1 )
 hframes = 10
-vframes = 3
+vframes = 5
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 autoplay = "idle"

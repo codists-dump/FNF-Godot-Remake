@@ -35,8 +35,8 @@ func _ready():
 		"Android", "iOS":
 			mobileMode = true
 
-func change_scene(path):
-	get_tree().current_scene.change_scene(path)
+func change_scene(path, transition=true):
+	get_tree().current_scene.change_scene(path, transition)
 	
 func change_to_main_menu():
 	var menuSong = load("res://Assets/Music/freakyMenu.ogg")
@@ -45,7 +45,7 @@ func change_to_main_menu():
 	
 	get_tree().current_scene.change_scene(MAIN_MENU)
 
-func change_playstate(song, difficulty, speed = 1):
+func change_playstate(song, difficulty, speed = 1, storySongs = null, transition = true):
 	var json = Conductor.load_song_json(song)
 	
 	# get the stage
@@ -77,8 +77,15 @@ func change_playstate(song, difficulty, speed = 1):
 		scene.PlayerCharacter = player1
 	if (player2 != null):
 		scene.EnemyCharacter = player2
+		
+	if (storySongs != null):
+		scene.storyMode = true
+		var _oldSong = storySongs.pop_front()
+		scene.storySongs = storySongs
+		
+		print(storySongs)
 	
-	Main.change_scene(scene)
+	Main.change_scene(scene, transition)
 
 func create_character(character):
 	var scene = Main.CHARACTERS[character]

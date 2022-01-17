@@ -3,7 +3,7 @@ extends Node2D
 # constants
 # hit timings and windows
 # {rating name: [min ms, score]}
-const HIT_TIMINGS = {"shit": [180, 50, 0.25], "bad": [135, 100, 0.50], "good": [102, 200, 0.75], "sick": [45, 350, 1]}
+const HIT_TIMINGS = {"shit": [180, 50, 0.25], "bad": [135, 100, 0.50], "good": [102, 200, 0.75], "sick": [55, 350, 1]}
 
 # preloading nodes
 const PAUSE_SCREEN = preload("res://Scenes/States/PlayState/PauseMenu.tscn")
@@ -48,6 +48,10 @@ var combo = 0
 var totalHitNotes = 0
 var hitNotes = 0
 
+# story vars
+var storyMode = false
+var storySongs = []
+
 # arrays holding the waiting for notes and sections
 var notes
 var sections
@@ -59,6 +63,9 @@ var PlayerStrum
 var EnemyStrum
 
 var MusicStream # might replace this because its only used like once
+
+# other
+var finished = false
 
 func _ready():
 	# get the strums nodes
@@ -575,14 +582,26 @@ func create_rating(rating):
 		$HUD.add_child(ratingObj)
 
 func restart_playstate():
-	Main.change_playstate(song, difficulty, speed)
+	storySongs.push_front("awesome")
+	Main.change_playstate(song, difficulty, speed, storySongs, true)
 
 func song_finished_check():
+	if (finished):
+		return
+	
 	if (MusicStream.get_playback_position() >= MusicStream.stream.get_length()):
-		Conductor.save_score(Conductor.songName, score)
+		finished = true
 		
-		var menuSong = load("res://Assets/Music/freakyMenu.ogg")
-		if (Conductor.MusicStream.stream != menuSong):
-			Conductor.play_song(menuSong, 102, 1)
-		
-		Main.change_scene("res://Scenes/States/FreePlayState.tscn")
+		if (len(storySongs) == 0):
+			Conductor.save_score(Conductor.songName, score)
+			
+			var menuSong = load("res://Assets/Music/freakyMenu.ogg")
+			if (Conductor.MusicStream.stream != menuSong):
+				Conductor.play_song(menuSong, 102, 1)
+			
+			if (!storyMode):
+				Main.change_scene("res://Scenes/States/FreePlayState.tscn")
+			else:
+				Main.change_scene("res://Scenes/States/StoryState.tscn")
+		else:
+			Main.change_playstate(storySongs[0], difficulty, 1, storySongs, false)

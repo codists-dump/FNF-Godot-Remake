@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://Assets/Sprites/UI/Story/Characters/story_bf_sheet.png" type="Texture" id=1]
+[ext_resource path="res://Scripts/States/Story/StoryCharacter.gd" type="Script" id=2]
+
+[node name="StoryCharacter" type="Sprite"]
+position = Vector2( 8, -134 )
+texture = ExtResource( 1 )
+hframes = 8
+script = ExtResource( 2 )

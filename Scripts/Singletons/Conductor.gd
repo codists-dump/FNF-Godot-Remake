@@ -4,7 +4,7 @@ signal beat_hit()
 signal half_beat_hit()
 
 const SCROLL_DISTANCE = 1.6 # units
-const SCROLL_TIME = 5.50 # sec
+const SCROLL_TIME = 2 # sec
 
 const COUNTDOWN_SOUNDS = [preload("res://Assets/Sounds/intro3.ogg"),
 						preload("res://Assets/Sounds/intro2.ogg"),
@@ -65,10 +65,10 @@ func _process(delta):
 		VocalStream.volume_db = -80
 	else:
 		VocalStream.volume_db = 0
+		
+	beat_process(delta)
 	
 	if (notesFinished):
-		beat_process(delta)
-
 		if (useCountdown):
 			countdown_process(delta)
 		
@@ -118,7 +118,9 @@ func play_chart(song, difficulty, speed = 1):
 		scroll_speed = songData["speed"]
 	else:
 		scroll_speed = 1 
-		
+	
+	scroll_speed = sqrt(scroll_speed)
+	
 	create_notes()
 	
 	MusicStream.stream = Mods.mod_ogg(songPath + "Inst.ogg")
@@ -138,7 +140,8 @@ func play_chart(song, difficulty, speed = 1):
 	else:
 		chartType = null
 	
-	var countDownOffset = get_tree().current_scene.current_scene.notes[0][0] - ((countdown / (bpm / 60)) * 2)
+	#var countDownOffset = get_tree().current_scene.current_scene.notes[0][0] - ((countdown / (bpm / 60)) * 2)
+	var countDownOffset = 0
 	if (countDownOffset < 0):
 		countdown -= countDownOffset
 
@@ -285,6 +288,8 @@ func beat_process(delta):
 			halfBeatCounter = 0
 
 func load_song_json(song, difExt=""):
+	difExt = difExt.to_lower()
+	
 	var songPath = "res://Assets/Songs/" + song + "/"
 	
 	var directory = Directory.new();
