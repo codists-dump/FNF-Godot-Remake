@@ -78,6 +78,9 @@ func load_keybinds():
 		
 	for action in file.get_section_keys("keybinds"):
 		var keys = InputMap.get_action_list(action)
+		
+		print(action)
+		
 		var scancode = file.get_value("keybinds", action, keys[keys.size()-1].scancode)
 
 		var key = InputEventKey.new()

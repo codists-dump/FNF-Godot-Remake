@@ -10,7 +10,7 @@
 [ext_resource path="res://Scenes/States/PlayState/StrumLine.tscn" type="PackedScene" id=8]
 [ext_resource path="res://Scenes/Mobile/MobilePlayControls.tscn" type="PackedScene" id=9]
 
-[sub_resource type="Animation" id=3]
+[sub_resource type="Animation" id=6]
 resource_name = "Bop"
 length = 0.2
 tracks/0/type = "value"
@@ -39,6 +39,30 @@ tracks/0/keys = {
 "transitions": PoolRealArray( 1 ),
 "update": 0,
 "values": [ Vector2( 1.4, 1.4 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Icons/Enemy:scale")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 0.714286, 0.714286 ) ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("Icons/Player:scale")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 0.714286, 0.714286 ) ]
 }
 
 [sub_resource type="DynamicFont" id=5]
@@ -103,21 +127,21 @@ position = Vector2( 300, 0 )
 scale = Vector2( 1.4, 1.4 )
 
 [node name="Enemy" type="Sprite" parent="HUD/HealthBar/Icons"]
+position = Vector2( -38.4153, 0 )
 scale = Vector2( 0.714286, 0.714286 )
 texture = ExtResource( 5 )
-offset = Vector2( -50, 0 )
 hframes = 2
 
 [node name="Player" type="Sprite" parent="HUD/HealthBar/Icons"]
+position = Vector2( 33.6135, 0 )
 scale = Vector2( 0.714286, 0.714286 )
 texture = ExtResource( 4 )
-offset = Vector2( 50, 0 )
 flip_h = true
 hframes = 2
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="HUD/HealthBar/Icons"]
 root_node = NodePath("../..")
-anims/Bop = SubResource( 3 )
+anims/Bop = SubResource( 6 )
 anims/RESET = SubResource( 4 )
 
 [node name="TextBar" type="Label" parent="HUD"]

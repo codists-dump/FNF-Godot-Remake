@@ -7,6 +7,7 @@ const HIT_TIMINGS = {"shit": [180, 50, 0.25], "bad": [135, 100, 0.50], "good": [
 
 # preloading nodes
 const PAUSE_SCREEN = preload("res://Scenes/States/PlayState/PauseMenu.tscn")
+const GAME_OVER = preload("res://Scenes/States/PlayState/GameOverState.tscn")
 
 const MISS_SOUNDS = [preload("res://Assets/Sounds/missnote1.ogg"),
 					preload("res://Assets/Sounds/missnote2.ogg"),
@@ -67,6 +68,10 @@ var MusicStream # might replace this because its only used like once
 # other
 var finished = false
 
+onready var healthShakePos = $HUD/HealthBar.rect_position
+var healthShakeTimer = 0
+var healthShakeIntensity = 1
+
 func _ready():
 	# get the strums nodes
 	PlayerStrum = get_node(PlayerStrumPath)
@@ -98,7 +103,7 @@ func _process(_delta):
 		get_tree().current_scene.add_child(pauseMenu)
 	
 	# process health bar stuff, like positions
-	health_bar_process()
+	health_bar_process(_delta)
 	
 	if (Conductor.notesFinished):
 		song_finished_check()
@@ -393,6 +398,8 @@ func on_miss(must_hit, note_type, passed = false):
 	
 	if (Settings.hudRatingsMiss):
 		create_rating(-1)
+	
+	shake_health()
 
 func get_rating(timing):
 	# get the last rating in the array and set it to the default (the last rating is the best)
@@ -433,7 +440,7 @@ func player_sprite(note_type, prefix):
 				
 	return animName + prefix
 
-func health_bar_process():
+func health_bar_process(delta):
 	var bar = $HUD/HealthBar
 	var icons = $HUD/HealthBar/Icons
 	
@@ -462,9 +469,10 @@ func health_bar_process():
 	
 	var accuracyString = "N/A"
 	var letterRating = ""
+	var accuracy = 0
 	if (hitNotes > 0):
 		var totalNotes = float(totalHitNotes + realMisses)
-		var accuracy = round((float(hitNotes) / totalNotes) * 10000) / 100
+		accuracy = round((float(hitNotes) / totalNotes) * 10000) / 100
 		
 		accuracyString = str(accuracy) + "%"
 		letterRating = " [" + get_letter_rating(accuracy) + "]"
@@ -472,6 +480,43 @@ func health_bar_process():
 	$HUD/TextBar.text = "Score: " + str(score) + " | Misses: " + str(misses + realMisses) + " | " + accuracyString + letterRating
 	
 	$HUD/Background.color.a = Settings.backgroundOpacity
+	
+	if (healthShakeTimer > 0):
+		$HUD/HealthBar.rect_position = healthShakePos + Vector2(rng.randi_range(-healthShakeIntensity, healthShakeIntensity), rng.randi_range(-healthShakeIntensity, healthShakeIntensity))
+		healthShakeTimer -= delta
+	else:
+		$HUD/HealthBar.rect_position = healthShakePos
+	
+	if (health <= 0):
+		Conductor.MusicStream.stop()
+		Conductor.VocalStream.stop()
+		
+		var gameoverScene = GAME_OVER.instance()
+		var offset = Vector2(-30, -120)
+		gameoverScene.get_node("DeathSprite").position = PlayerCharacter.position + offset
+		
+		gameoverScene.get_node("Camera2D").position = $Camera.position
+		gameoverScene.get_node("Camera2D").zoom = $Camera.zoom
+		
+		var rankText = "RANK " + get_letter_rating(accuracy)
+		var scoreText = "\n\nSCORE: " + str(score)
+		var missText = "\nMISSES: " + str(realMisses) + "/" + str(totalHitNotes + realMisses)
+		var accText = "\nACCURACY: " + str(accuracyString)
+		
+		var nutsText = "\n\nCause of death: " + str(song)
+	
+		var gameOverText = rankText + scoreText + missText + accText + nutsText
+		
+		gameoverScene.get_node("CanvasLayer/Label").text = gameOverText
+		
+		storySongs.push_front("lose")
+		
+		gameoverScene.song = song
+		gameoverScene.difficulty = difficulty
+		gameoverScene.speed = speed
+		gameoverScene.storySongs = storySongs
+		
+		Main.change_scene(gameoverScene, false)
 		
 func get_letter_rating(accuracy):
 	var letterRatings = {"A+": 95, "A": 85, "B+": 77.5, "B": 72.5, "C+": 67.5, "C": 62.5, "D+": 57.5, "D": 52.5, "E": 45, "F": 20}
@@ -605,3 +650,9 @@ func song_finished_check():
 				Main.change_scene("res://Scenes/States/StoryState.tscn")
 		else:
 			Main.change_playstate(storySongs[0], difficulty, 1, storySongs, false)
+
+func shake_health(time = 0.15, intensity = 10):
+	healthShakePos = $HUD/HealthBar.rect_position
+	
+	healthShakeTimer = time
+	healthShakeIntensity = intensity

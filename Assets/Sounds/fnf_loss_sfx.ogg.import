@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/fnf_loss_sfx.ogg-f162b73526171a279b0cdcfcd0da89ee.oggstr"
+
+[deps]
+
+source_file="res://Assets/Sounds/fnf_loss_sfx.ogg"
+dest_files=[ "res://.import/fnf_loss_sfx.ogg-f162b73526171a279b0cdcfcd0da89ee.oggstr" ]
+
+[params]
+
+loop=false
+loop_offset=0
