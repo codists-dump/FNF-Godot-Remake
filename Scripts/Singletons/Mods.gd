@@ -7,8 +7,7 @@ var imageDir
 
 func _ready():
 	if !(OS.has_feature("standalone")):
-		modsFolder = ""
-		#modsFolder = "res://mods"
+		modsFolder = "res://.mods"
 		
 	songsDir = modsFolder + "/songs"
 	charactersDir = modsFolder + "/characters"
@@ -42,6 +41,7 @@ func load_characters():
 			
 # load files
 
+# add check for .imports
 func mod_image(dir):
 	var image = Image.new();
 	image.load(dir)

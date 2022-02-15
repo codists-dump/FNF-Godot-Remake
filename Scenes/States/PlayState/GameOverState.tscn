@@ -326,6 +326,9 @@ bus = "SFX"
 [node name="DeathStream" type="AudioStreamPlayer" parent="."]
 stream = ExtResource( 1 )
 bus = "SFX"
+__meta__ = {
+"_editor_description_": ""
+}
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 

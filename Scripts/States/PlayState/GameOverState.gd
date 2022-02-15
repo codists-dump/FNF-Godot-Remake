@@ -50,7 +50,7 @@ func _on_AnimationPlayer_animation_finished(anim_name):
 			
 			$AnimationPlayer.play("bop")
 		"confirm":
-			Main.change_playstate(song, difficulty, speed, storySongs, false)
+			Main.change_playstate(song, difficulty, speed, storySongs, true)
 
 func beat():
 	if (doBop):

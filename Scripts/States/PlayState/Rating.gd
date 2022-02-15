@@ -1,24 +1,39 @@
 extends Node2D
 
 var vsp = -200
-var gravity = 1000
+var gravity = 800
 
 var combo = 0
 
 var numberTexture = preload("res://Assets/Sprites/UI/combo.png")
+var numberVsps = []
 
 func _ready():
 	create_numbers()
 
 func _process(delta):
-	position.y += vsp * delta
+	$Sprite.position.y += vsp * delta
 	vsp += gravity * delta
 	
 	if (vsp > 0):
-		modulate.a -= 5 * delta
+		modulate.a -= 3 * delta
 		
 	if (modulate.a <= 0):
 		queue_free()
+	
+	move_numbers(delta)
+	
+func move_numbers(delta):
+	var index = 0
+	for child in get_children():
+		if (index == 0):
+			index += 1
+			continue
+		
+		child.position += numberVsps[index-1] * delta
+		numberVsps[index-1].y += gravity * delta
+		
+		index += 1
 
 func create_numbers():
 	var comboLen = len(str(combo))
@@ -34,6 +49,8 @@ func create_numbers():
 		var pos = Vector2(sep * i, 0)
 		var number = str(combo).substr(trueLength-(i+1), 1)
 		create_number(pos, number)
+	
+	print(numberVsps)
 
 func create_number(pos, number):
 	var num = Sprite.new()
@@ -57,5 +74,7 @@ func create_number(pos, number):
 		
 	if (combo < 0):
 		num.modulate = Color("db4d4d")
+	
+	numberVsps.append(Vector2(0, rand_range(-160, -260)))
 	
 	add_child(num)

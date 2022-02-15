@@ -37,6 +37,7 @@ var options = {
 		"UP": ["up", "", true, "key"],
 		"RIGHT": ["right", "", true, "key"],
 			"SEP1": [null, "", true, "seperator"],
+		"RESET": ["reset", "", true, "key"],
 		"CONFIRM": ["confirm", "", true, "key"],
 		"CANCEL": ["cancel", "", true, "key"],
 			"SEP2": [null, "", false, "seperator"],

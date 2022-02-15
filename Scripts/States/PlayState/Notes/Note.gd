@@ -19,6 +19,8 @@ var holdNote = false
 var wasHit = false
 var held = false
 
+var holdHealth = 0.05
+
 var hasArrowFrames = true
 
 onready var holdWindow = ((60 / Conductor.bpm) / 4)
@@ -130,6 +132,7 @@ func _process(_delta):
 		if (sustain_length > 0):
 			$Tween.stop_all()
 			sustain_length -= _delta
+			playState.health -= holdHealth
 		else:
 			$Tween.remove_all()
 			note_miss(true)
@@ -155,6 +158,8 @@ func _process(_delta):
 		animPlayer.play("hit")
 		
 		sustain_length -= _delta
+		if (must_hit):
+			playState.health += holdHealth
 		
 		if (sustain_length <= 0):
 			queue_free()

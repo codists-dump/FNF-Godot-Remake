@@ -72,6 +72,9 @@ onready var healthShakePos = $HUD/HealthBar.rect_position
 var healthShakeTimer = 0
 var healthShakeIntensity = 1
 
+# old vars
+var oldHealth = health
+
 func _ready():
 	# get the strums nodes
 	PlayerStrum = get_node(PlayerStrumPath)
@@ -227,7 +230,7 @@ func get_section():
 				
 		EnemyCharacter.useAlt = section[2]
 		
-		if (character != null):
+		if (character != null && Conductor.countingDown == false):
 			if (character.flipX):
 				$Camera.position = character.position + character.camOffset
 			else:
@@ -446,17 +449,23 @@ func health_bar_process(delta):
 	
 	health = clamp(health, 0, 100)
 	
-	bar.value = health
+	if (Conductor.countingDown && misses == 0):
+		oldHealth = lerp(oldHealth, health, 3 * delta)
+		bar.value = oldHealth
+	else:
+		bar.value = health
+		
 	icons.position.x = -(bar.value * (bar.rect_size.x / 100)) + bar.rect_size.x
 	
-	if (bar.value > 90):
+	var barOffset = 20
+	if (bar.value > 100 - barOffset):
 		$HUD/HealthBar/Icons/Enemy.frame = 1
 		
 		if ($HUD/HealthBar/Icons/Player.hframes > 2):
 			$HUD/HealthBar/Icons/Player.frame = 2
 		else:
 			$HUD/HealthBar/Icons/Player.frame = 0
-	elif (bar.value < 10):
+	elif (bar.value < barOffset):
 		$HUD/HealthBar/Icons/Player.frame = 1
 		
 		if ($HUD/HealthBar/Icons/Player.hframes > 2):
@@ -486,6 +495,9 @@ func health_bar_process(delta):
 		healthShakeTimer -= delta
 	else:
 		$HUD/HealthBar.rect_position = healthShakePos
+	
+	if (Input.is_action_just_pressed("reset")):
+		health = 0
 	
 	if (health <= 0):
 		Conductor.MusicStream.stop()
@@ -649,10 +661,13 @@ func song_finished_check():
 			else:
 				Main.change_scene("res://Scenes/States/StoryState.tscn")
 		else:
-			Main.change_playstate(storySongs[0], difficulty, 1, storySongs, false)
+			var dic = {
+				"camPos": $Camera.position,
+				"oldHealth": health
+			}
+			
+			Main.change_playstate(storySongs[0], difficulty, 1, storySongs, false, dic)
 
-func shake_health(time = 0.15, intensity = 10):
-	healthShakePos = $HUD/HealthBar.rect_position
-	
+func shake_health(time = 0.15, intensity = 8):
 	healthShakeTimer = time
 	healthShakeIntensity = intensity

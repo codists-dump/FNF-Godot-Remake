@@ -45,7 +45,7 @@ func change_to_main_menu():
 	
 	get_tree().current_scene.change_scene(MAIN_MENU)
 
-func change_playstate(song, difficulty, speed = 1, storySongs = null, transition = true):
+func change_playstate(song, difficulty, speed = 1, storySongs = null, transition = true, prevState = null):
 	var json = Conductor.load_song_json(song)
 	
 	# get the stage
@@ -85,6 +85,13 @@ func change_playstate(song, difficulty, speed = 1, storySongs = null, transition
 		
 		print(storySongs)
 	
+	if (prevState != null):
+		if (prevState.has("camPos")):
+			print(prevState["camPos"])
+			scene.get_node("Camera").position = prevState["camPos"]
+		if (prevState.has("oldHealth")):
+			scene.oldHealth = prevState["oldHealth"]
+		
 	Main.change_scene(scene, transition)
 
 func create_character(character):

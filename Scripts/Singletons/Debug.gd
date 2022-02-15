@@ -21,6 +21,10 @@ func _input(event):
 					OS.window_fullscreen = !OS.window_fullscreen
 				KEY_1:
 					Mods.load_characters()
+				KEY_MINUS:
+					AudioServer.set_bus_volume_db(0, AudioServer.get_bus_volume_db(0) - 5)
+				KEY_EQUAL:
+					AudioServer.set_bus_volume_db(0, AudioServer.get_bus_volume_db(0) + 5)
 
 func beat_hit():
 	if (bpmTestMode):

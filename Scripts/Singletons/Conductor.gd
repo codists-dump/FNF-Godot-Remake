@@ -28,6 +28,7 @@ var VocalStream
 var countingDown = false
 var countdown = 0
 var countdownState = 0
+var lastCount = 0
 
 var useCountdown = false
 
@@ -132,7 +133,7 @@ func play_chart(song, difficulty, speed = 1):
 	else:
 		VocalStream.stream = null
 	
-	countdown = 2.8
+	countdown = 3
 	useCountdown = true
 	
 	if (songData.has("type")):
@@ -230,31 +231,55 @@ func create_notes():
 
 func countdown_process(delta):
 	var playState = get_tree().current_scene.current_scene
-	var countdownSprite = playState.get_node("HUD/Countdown")
-	var stream = playState.get_node("Audio/CountdownStream")
 	
 	if (countdown > 0):
 		countingDown = true
 		countdown -= ((bpm / 60) / 2) * song_speed * delta
 	
 	if (countingDown):
+		var countdownSprite = playState.get_node("HUD/Countdown")
+		var stream = playState.get_node("Audio/CountdownStream")
+	
 		countdownState = ceil((fmod(countdown / 5, countdown) * 10))
+		
+		if (countdownSprite == null):
+			return
+		
+		countdownSprite.modulate.a -= 3 * delta
 		
 		match (str(countdownState)):
 			"4":
-				play_countdown_sound(stream, COUNTDOWN_SOUNDS[0])
+				if (lastCount != 4):
+					play_countdown_sound(stream, COUNTDOWN_SOUNDS[0])
+				
+				lastCount = 4
 			"3":
-				play_countdown_sound(stream, COUNTDOWN_SOUNDS[1])
+				if (lastCount != 3):
+					play_countdown_sound(stream, COUNTDOWN_SOUNDS[1])
+					countdownSprite.modulate.a = 1
+				
 				countdownSprite.visible = true
 				countdownSprite.frame = 0
+				
+				lastCount = 3
 			"2":
-				play_countdown_sound(stream, COUNTDOWN_SOUNDS[2])
+				if (lastCount != 2):
+					play_countdown_sound(stream, COUNTDOWN_SOUNDS[2])
+					countdownSprite.modulate.a = 1
+				
 				countdownSprite.visible = true
 				countdownSprite.frame = 1
+				
+				lastCount = 2
 			"1":
-				play_countdown_sound(stream, COUNTDOWN_SOUNDS[3])
+				if (lastCount != 1):
+					play_countdown_sound(stream, COUNTDOWN_SOUNDS[3])
+					countdownSprite.modulate.a = 1
+				
 				countdownSprite.visible = true
 				countdownSprite.frame = 2
+				
+				lastCount = 1
 		
 		if (countdown <= 0):
 			start_song()
