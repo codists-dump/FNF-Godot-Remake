@@ -116,7 +116,7 @@ position = Vector2( 1, -320 )
 texture = ExtResource( 2 )
 hframes = 10
 vframes = 7
-frame = 40
+frame = 48
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 autoplay = "danceLEFT"

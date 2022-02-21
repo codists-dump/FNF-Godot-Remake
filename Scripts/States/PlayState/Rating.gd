@@ -1,7 +1,7 @@
 extends Node2D
 
-var vsp = -200
-var gravity = 800
+var vsp = -180
+var gravity = 450
 
 var combo = 0
 
@@ -75,6 +75,6 @@ func create_number(pos, number):
 	if (combo < 0):
 		num.modulate = Color("db4d4d")
 	
-	numberVsps.append(Vector2(0, rand_range(-160, -260)))
+	numberVsps.append(Vector2(0, rand_range(-170, -200)))
 	
 	add_child(num)

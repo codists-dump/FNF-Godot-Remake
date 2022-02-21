@@ -1,6 +1,7 @@
 extends "res://Scripts/States/PlayState/Notes/Note.gd"
 
 func _ready():
+	holdHealth = 0
 	hasArrowFrames = false
 	
 	holdArray = desatHolds
@@ -29,4 +30,3 @@ func note_hit(timing):
 		
 		if (character != null):
 			character.play("hit")
-			character.idleTimer = 0.2

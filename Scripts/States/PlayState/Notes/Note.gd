@@ -24,6 +24,8 @@ var holdHealth = 0.05
 var hasArrowFrames = true
 
 onready var holdWindow = ((60 / Conductor.bpm) / 4)
+var tweenScale = 1
+var changingTweenScale = false
 
 var noteColor
 
@@ -50,8 +52,10 @@ func _ready():
 	
 	playState = get_tree().current_scene.current_scene
 	
+	tweenScale = strum_lane.tweenScale
+	
 	if (visible):
-		$Tween.interpolate_property(self, "position:y", SCROLL_DISTANCE * Conductor.scroll_speed, 0, SCROLL_TIME / Conductor.scroll_speed)
+		$Tween.interpolate_property(self, "position:y", ((SCROLL_DISTANCE * Conductor.scroll_speed) * tweenScale), 0, SCROLL_TIME / Conductor.scroll_speed)
 		$Tween.start()
 		
 	match note_type:
@@ -92,6 +96,10 @@ func setup_note_colors():
 			$Line2D.modulate = noteColor
 	
 func _on_Tween_tween_completed(_object, _key):
+	if (changingTweenScale):
+		changingTweenScale = false
+		return
+	
 	if (strum_lane != null):
 		if (missed):
 			note_miss(true)
@@ -100,7 +108,7 @@ func _on_Tween_tween_completed(_object, _key):
 			note_hit(0)
 		else:
 			missed = true
-			$Tween.interpolate_property(self, "position:y", 0, -SCROLL_DISTANCE * Conductor.scroll_speed, SCROLL_TIME / Conductor.scroll_speed)
+			$Tween.interpolate_property(self, "position:y", 0, ((-SCROLL_DISTANCE * Conductor.scroll_speed) * tweenScale), SCROLL_TIME / Conductor.scroll_speed)
 			
 			if (sustain_length <= 0):
 				$Tween.start()
@@ -128,6 +136,22 @@ func note_miss(passed):
 	queue_free()
 
 func _process(_delta):
+	$Sprite.offset.y = strum_lane.position.y 
+	$Line2D.position.y = strum_lane.position.y 
+	
+	if (strum_lane.tweenScale != tweenScale):
+		changingTweenScale = true
+		
+		tweenScale = strum_lane.tweenScale
+		
+		var lastTime = $Tween.tell()
+		print(lastTime)
+		$Tween.stop_all()
+		
+		$Tween.interpolate_property(self, "position:y", ((SCROLL_DISTANCE * Conductor.scroll_speed) * tweenScale), 0, (SCROLL_TIME / Conductor.scroll_speed))
+		$Tween.start()
+		$Tween.seek(lastTime)
+	
 	if (missed && $Tween.tell() > 0.2):
 		if (sustain_length > 0):
 			$Tween.stop_all()
@@ -142,18 +166,21 @@ func _process(_delta):
 		
 	if (holdNote):
 		var multi = 1
-		if (Settings.downScroll):
+		if (Settings.downScroll || tweenScale < 0):
 			multi = -1
 		
 		# awesome hold note math magic by Scarlett
 		var lineY = (sustain_length * (SCROLL_DISTANCE * Conductor.scroll_speed * Conductor.scroll_speed / SCROLL_TIME) * multi) - holdSprs[key][1].get_height()
-		if (lineY <= 0):
+		if (abs(lineY) <= 0):
 			lineY = 0
 		
 		$Line2D.points[1] = Vector2(0, lineY)
 		update()
 		
 	if (held):
+		$Line2D.position.y = 0
+		
+		
 		var animPlayer = strum_lane.get_node("AnimationPlayer")
 		animPlayer.play("hit")
 		

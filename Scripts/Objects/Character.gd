@@ -14,8 +14,13 @@ export (Resource) var iconSheet = preload("res://Assets/Sprites/Characters/Icons
 export (Color) var characterColor = Color.yellow
 
 var lastIdleDance = null
+
 var idleTimer = 0
+var animTimer = 0
+
 var useAlt = false
+
+var animAddon = ""
 
 func _ready():
 	if Engine.editor_hint:
@@ -40,10 +45,17 @@ func _process(_delta):
 		return
 		
 	if (idleTimer > 0):
-		idleTimer -= 1 * _delta
+		idleTimer -= _delta
+	if (animTimer > 0):
+		animTimer -= _delta
 
-func play(animName):
-	$AnimationPlayer.stop()
+func play(animName, newAnimTimer = 0):
+	if (animTimer > 0):
+		return
+	
+	if ($AnimationPlayer.has_animation(animName+animAddon)):
+		animName = animName+animAddon
+	
 	if (flipX):
 		match (animName):
 			"singLEFT":
@@ -61,9 +73,16 @@ func play(animName):
 				animName += "-alt"
 	
 	if ($AnimationPlayer.has_animation(animName)):
+		$AnimationPlayer.stop(true)
 		$AnimationPlayer.play(animName)
+		
+		animTimer = newAnimTimer
+		idleTimer = 0.5
 	
 func idle_dance():
+	if (animTimer > 0):
+		return
+	
 	if (get_idle_anim() == "idle"):
 		if (idleTimer <= 0):
 			$AnimationPlayer.stop()

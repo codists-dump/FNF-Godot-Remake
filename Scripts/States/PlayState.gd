@@ -1,5 +1,7 @@
 extends Node2D
 
+signal event_activated(eventName, eventArgs)
+
 # constants
 # hit timings and windows
 # {rating name: [min ms, score]}
@@ -17,10 +19,10 @@ const RATING_SCENE = preload("res://Scenes/States/PlayState/Rating.tscn")
 
 # notes
 const NOTES = {
-				"": preload("res://Scenes/States/PlayState/Notes/Note.tscn"),
-				"mine": preload("res://Scenes/States/PlayState/Notes/NoteMine.tscn"),
-				"warn": preload("res://Scenes/States/PlayState/Notes/NoteWarn.tscn")
-			}
+	"": preload("res://Scenes/States/PlayState/Notes/Note.tscn"),
+	"mine": preload("res://Scenes/States/PlayState/Notes/NoteMine.tscn"),
+	"warn": preload("res://Scenes/States/PlayState/Notes/NoteWarn.tscn")
+}
 const NOTE_SPLASH = preload("res://Scenes/States/PlayState/NoteSplash.tscn")
 
 enum Note {Left, Down, Up, Right}
@@ -56,6 +58,7 @@ var storySongs = []
 # arrays holding the waiting for notes and sections
 var notes
 var sections
+var events
 
 var must_hit_section = false # if the section should be hit or not
 
@@ -67,10 +70,17 @@ var MusicStream # might replace this because its only used like once
 
 # other
 var finished = false
+var chartingMode = true
 
-onready var healthShakePos = $HUD/HealthBar.rect_position
+onready var healthShakePos = $HUD/HudElements/HealthBar.rect_position
 var healthShakeTimer = 0
 var healthShakeIntensity = 1
+
+var hudBopCounter = 0
+var maxHudBop = 4
+
+var freeCamera = false
+var cameraTimer = -1
 
 # old vars
 var oldHealth = health
@@ -85,19 +95,26 @@ func _ready():
 	setup_characters() # setup the characters positions and icons
 	setup_strums() # setup the positions and stuff for strums
 	
+	load_song_scripts()
+	
 	rng.randomize() # randomize the rng variable's seed
 	
 	# tell the conductor to play the currently selected song
 	# i might just remove the playstate entirely for this process, and only use the conductor
+	if (!chartingMode):
+		Conductor.songData = null
+	
 	Conductor.play_chart(song, difficulty, speed)
 	
 	var _c_beat = Conductor.connect("beat_hit", self, "hud_bop") # connect the beat hit signal to the icon bop
-
+	connect("event_activated", self, "on_event")
+	
 func _process(_delta):
 	player_input() # handle the players input
 	
 	spawn_notes() # create the needed notes
 	get_section() # get the current section
+	get_event()
 	
 	# pause the game
 	if (Input.is_action_just_pressed("confirm")):
@@ -110,6 +127,22 @@ func _process(_delta):
 	
 	if (Conductor.notesFinished):
 		song_finished_check()
+		
+	if (cameraTimer > 0):
+		cameraTimer -= _delta
+	elif (cameraTimer != -1):
+		cameraTimer = -1
+		freeCamera = false
+
+	$HUD/HudElements.scale = lerp($HUD/HudElements.scale, Vector2(1,1), _delta * 5)
+
+func _input(event):
+	# debug shit
+	if (event is InputEventKey):
+		if (event.pressed):
+			match (event.scancode):
+				KEY_7:
+					Main.change_chart_state()
 
 func player_input():
 	if (PlayerStrum == null || Settings.botPlay):
@@ -217,6 +250,10 @@ func get_section():
 	if MusicStream.get_playback_position() >= section[0]:
 		if (sections.has(section)):
 			sections.erase(section)
+		
+		if (Conductor.startingPosition != 0):
+			if (section[0] < Conductor.startingPosition):
+				return
 			
 		var character
 		
@@ -230,11 +267,28 @@ func get_section():
 				
 		EnemyCharacter.useAlt = section[2]
 		
-		if (character != null && Conductor.countingDown == false):
+		if (character != null && !freeCamera):
 			if (character.flipX):
 				$Camera.position = character.position + character.camOffset
 			else:
 				$Camera.position = character.position + Vector2(-character.camOffset.x, character.camOffset.y)
+
+func get_event():
+	if (events == null || events.empty()):
+		return
+		
+	var event = events[0]
+	
+	if MusicStream.get_playback_position() >= event[0]:
+		if (events.has(event)):
+			events.erase(event)
+		
+		if (Conductor.startingPosition != 0):
+			if (event[0] < Conductor.startingPosition + 2.5):
+				return
+		
+		emit_signal("event_activated", event[1], event[3])
+		print(event[1], event[3])
 
 func spawn_note(dir, strum_time, sustain_length, arg3):
 	if (dir > 7):
@@ -252,14 +306,20 @@ func spawn_note(dir, strum_time, sustain_length, arg3):
 		var curNote = ""
 		
 		if (arg3 != null):
+			var idealNote = str(arg3)
+			
 			if (Conductor.chartType == "PSYCH"):
 				match arg3:
 					"Hurt Note":
-						curNote = "mine"
+						idealNote = "mine"
 					"halfBlammed Note":
-						curNote = "warn"
+						idealNote = "warn"
 					_:
 						return
+			
+			if (idealNote in NOTES.keys()):
+				print(idealNote)
+				curNote = idealNote
 		
 		var note = NOTES[curNote].instance()
 		
@@ -297,7 +357,7 @@ func on_hit(must_hit, note_type, timing):
 		character.play(animName)
 		character.idleTimer = 0.2
 		
-		if (Settings.cameraMovement):
+		if (Settings.cameraMovement && !freeCamera):
 			if (must_hit && must_hit_section || !must_hit && !must_hit_section):
 				var offsetVector = character.camOffset
 				var intensity = 10
@@ -368,7 +428,8 @@ func on_hit(must_hit, note_type, timing):
 			
 			splash.play(anim.to_lower() + str(num))
 			
-			$HUD.add_child(splash)
+			if (Settings.noteSplashes):
+				$HUD/HudElements.add_child(splash)
 		
 		create_rating(HIT_TIMINGS.keys().find(rating))
 		
@@ -444,8 +505,8 @@ func player_sprite(note_type, prefix):
 	return animName + prefix
 
 func health_bar_process(delta):
-	var bar = $HUD/HealthBar
-	var icons = $HUD/HealthBar/Icons
+	var bar = $HUD/HudElements/HealthBar
+	var icons = $HUD/HudElements/HealthBar/Icons
 	
 	health = clamp(health, 0, 100)
 	
@@ -459,22 +520,22 @@ func health_bar_process(delta):
 	
 	var barOffset = 20
 	if (bar.value > 100 - barOffset):
-		$HUD/HealthBar/Icons/Enemy.frame = 1
+		$HUD/HudElements/HealthBar/Icons/Enemy.frame = 1
 		
-		if ($HUD/HealthBar/Icons/Player.hframes > 2):
-			$HUD/HealthBar/Icons/Player.frame = 2
+		if ($HUD/HudElements/HealthBar/Icons/Player.hframes > 2):
+			$HUD/HudElements/HealthBar/Icons/Player.frame = 2
 		else:
-			$HUD/HealthBar/Icons/Player.frame = 0
+			$HUD/HudElements/HealthBar/Icons/Player.frame = 0
 	elif (bar.value < barOffset):
-		$HUD/HealthBar/Icons/Player.frame = 1
+		$HUD/HudElements/HealthBar/Icons/Player.frame = 1
 		
-		if ($HUD/HealthBar/Icons/Player.hframes > 2):
-			$HUD/HealthBar/Icons/Enemy.frame = 2
+		if ($HUD/HudElements/HealthBar/Icons/Player.hframes > 2):
+			$HUD/HudElements/HealthBar/Icons/Enemy.frame = 2
 		else:
-			$HUD/HealthBar/Icons/Enemy.frame = 0
+			$HUD/HudElements/HealthBar/Icons/Enemy.frame = 0
 	else:
-		$HUD/HealthBar/Icons/Enemy.frame = 0
-		$HUD/HealthBar/Icons/Player.frame = 0
+		$HUD/HudElements/HealthBar/Icons/Enemy.frame = 0
+		$HUD/HudElements/HealthBar/Icons/Player.frame = 0
 	
 	var accuracyString = "N/A"
 	var letterRating = ""
@@ -486,15 +547,21 @@ func health_bar_process(delta):
 		accuracyString = str(accuracy) + "%"
 		letterRating = " [" + get_letter_rating(accuracy) + "]"
 	
-	$HUD/TextBar.text = "Score: " + str(score) + " | Misses: " + str(misses + realMisses) + " | " + accuracyString + letterRating
+	$HUD/HudElements/TextBar.text = "Score: " + str(score) + " | Misses: " + str(misses + realMisses) + " | " + accuracyString + letterRating
 	
-	$HUD/Background.color.a = Settings.backgroundOpacity
+	$HUD/HudElements/TopBar/Progress.value = MusicStream.get_playback_position()
+	$HUD/HudElements/TopBar/Progress.max_value = MusicStream.stream.get_length()
+	
+	$HUD/HudElements/TopBar/TopBarLabel.text = song.capitalize() + " | " + difficulty.to_upper() + " | " + Main.convert_to_time_string(MusicStream.stream.get_length() - MusicStream.get_playback_position())
+	$HUD/HudElements/BotplayLabel.visible = Settings.botPlay
+	
+	$HUD/HudElements/Background.color.a = Settings.backgroundOpacity
 	
 	if (healthShakeTimer > 0):
-		$HUD/HealthBar.rect_position = healthShakePos + Vector2(rng.randi_range(-healthShakeIntensity, healthShakeIntensity), rng.randi_range(-healthShakeIntensity, healthShakeIntensity))
+		$HUD/HudElements/HealthBar.rect_position = healthShakePos + Vector2(rng.randi_range(-healthShakeIntensity, healthShakeIntensity), rng.randi_range(-healthShakeIntensity, healthShakeIntensity))
 		healthShakeTimer -= delta
 	else:
-		$HUD/HealthBar.rect_position = healthShakePos
+		$HUD/HudElements/HealthBar.rect_position = healthShakePos
 	
 	if (Input.is_action_just_pressed("reset")):
 		health = 0
@@ -527,6 +594,7 @@ func health_bar_process(delta):
 		gameoverScene.difficulty = difficulty
 		gameoverScene.speed = speed
 		gameoverScene.storySongs = storySongs
+		gameoverScene.chartingMode = chartingMode
 		
 		Main.change_scene(gameoverScene, false)
 		
@@ -550,7 +618,12 @@ func get_letter_rating(accuracy):
 	return chosenRating + prefix
 
 func hud_bop():
-	$HUD/HealthBar/Icons/AnimationPlayer.play("Bop")
+	$HUD/HudElements/HealthBar/Icons/AnimationPlayer.play("Bop")
+	
+	hudBopCounter += 1
+	if (hudBopCounter >= maxHudBop):
+		$HUD/HudElements.scale = Vector2(1.02, 1.02)
+		hudBopCounter = 0
 
 func setup_characters():
 	if (GFCharacter != null):
@@ -558,6 +631,7 @@ func setup_characters():
 		$Characters.add_child(GFCharacter)
 		
 		GFCharacter.position = $Positions/Girlfriend.position
+		$Camera.position = GFCharacter.position + GFCharacter.camOffset
 	
 	if (EnemyCharacter != null):
 		EnemyCharacter = Main.create_character(EnemyCharacter)
@@ -569,8 +643,8 @@ func setup_characters():
 			EnemyCharacter.position = $Positions/Enemy.position
 			EnemyCharacter.flipX = !EnemyCharacter.flipX
 		
-		setup_icon($HUD/HealthBar/Icons/Enemy, EnemyCharacter)
-		$HUD/HealthBar.tint_under = EnemyCharacter.characterColor
+		setup_icon($HUD/HudElements/HealthBar/Icons/Enemy, EnemyCharacter)
+		$HUD/HudElements/HealthBar.tint_under = EnemyCharacter.characterColor
 	
 	if (PlayerCharacter != null):
 		PlayerCharacter = Main.create_character(PlayerCharacter)
@@ -581,8 +655,8 @@ func setup_characters():
 		else:
 			PlayerCharacter.position = $Positions/Player.position
 		
-		setup_icon($HUD/HealthBar/Icons/Player, PlayerCharacter)
-		$HUD/HealthBar.tint_progress = PlayerCharacter.characterColor
+		setup_icon($HUD/HudElements/HealthBar/Icons/Player, PlayerCharacter)
+		$HUD/HudElements/HealthBar.tint_progress = PlayerCharacter.characterColor
 		
 	if (PlayerCharacter.girlfriendPosition || EnemyCharacter.girlfriendPosition):
 		GFCharacter.queue_free()
@@ -601,10 +675,8 @@ func setup_strums():
 		EnemyStrum.position.y = 890
 		EnemyStrum.scale.y = -EnemyStrum.scale.y
 		
-		$HUD/HealthBar.rect_position.y = 100
-		$HUD/TextBar.rect_position.y = 50
-		
-		$HUD/Debug.position.y += 50
+		$HUD/HudElements/HealthBar.rect_position.y = 100
+		$HUD/HudElements/TextBar.rect_position.y = 50
 		
 	if (Settings.middleScroll):
 		PlayerStrum.position.x = 675
@@ -621,6 +693,8 @@ func setup_strums():
 	
 	for button in EnemyStrum.get_node("Buttons").get_children():
 		button.enemyStrum = true
+	
+	healthShakePos = $HUD/HudElements/HealthBar.rect_position
 
 func create_rating(rating):
 	var ratingObj = RATING_SCENE.instance()
@@ -636,11 +710,11 @@ func create_rating(rating):
 	else:
 		ratingObj.position = Settings.hudRatingsOffset / 0.7
 		ratingObj.get_node("Sprite").scale = Vector2(1, 1)
-		$HUD.add_child(ratingObj)
+		$HUD/HudElements.add_child(ratingObj)
 
 func restart_playstate():
 	storySongs.push_front("awesome")
-	Main.change_playstate(song, difficulty, speed, storySongs, true)
+	Main.change_playstate(song, difficulty, speed, storySongs, true, null, chartingMode)
 
 func song_finished_check():
 	if (finished):
@@ -671,3 +745,75 @@ func song_finished_check():
 func shake_health(time = 0.15, intensity = 8):
 	healthShakeTimer = time
 	healthShakeIntensity = intensity
+
+func load_song_scripts():
+	load_script(Mods.modsFolder + "script.gd")
+	load_script(Mods.songsDir + "/" + song + "/script.gd")
+
+func load_script(dir):
+	var file = Mods.mod_script(dir)
+	if (file is Object):
+		var node = file.new()
+		
+		node.playState = self
+		
+		add_child(node)
+
+func on_event(eventName, eventArgs):
+	match eventName:
+		"zoom_camera":
+			var zoomTo = float(eventArgs[0])
+			var zoomSpd = 0.5
+			
+			if (len(eventArgs) > 1):
+				zoomSpd = float(eventArgs[1])
+			
+			var tween = Tween.new()
+			
+			add_child(tween)
+			tween.interpolate_property($Camera, "zoom",
+				$Camera.zoom, Vector2(zoomTo, zoomTo), zoomSpd,
+				Tween.TRANS_QUAD, Tween.EASE_IN_OUT)
+			tween.start()
+		
+		"play_animation":
+			var character = PlayerCharacter
+			match (eventArgs[0]):
+				"1":
+					character = EnemyCharacter
+				"2":
+					character = GFCharacter
+			
+			character.play(eventArgs[1])
+		
+		"change_character":
+			var newCharacter = Main.create_character(eventArgs[1])
+			$Characters.add_child(newCharacter)
+			
+			var iconRef = $HUD/HudElements/HealthBar/Icons/Player
+			var pos = $Positions/Player.position
+			
+			var character = "PlayerCharacter"
+			match (eventArgs[0]):
+				"1":
+					character = "EnemyCharacter"
+					
+					newCharacter.flipX = !newCharacter.flipX
+					iconRef = $HUD/HudElements/HealthBar/Icons/Enemy
+					pos = $Positions/Enemy.position
+					$HUD/HudElements/HealthBar.tint_under = newCharacter.characterColor
+				"2":
+					character = "GFCharacter"
+				_:
+					$HUD/HudElements/HealthBar.tint_progress = newCharacter.characterColor
+			
+			if (newCharacter.girlfriendPosition):
+				pos = $Positions/Girlfriend.position
+			
+			setup_icon(iconRef, newCharacter)
+			newCharacter.position = pos
+			
+			var oldCharacter = get(character)
+			
+			oldCharacter.queue_free()
+			set(character, newCharacter)

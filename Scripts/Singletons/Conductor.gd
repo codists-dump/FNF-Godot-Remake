@@ -2,6 +2,8 @@ extends Node
 
 signal beat_hit()
 signal half_beat_hit()
+signal on_beat(beat)
+signal on_step(step)
 
 const SCROLL_DISTANCE = 1.6 # units
 const SCROLL_TIME = 2 # sec
@@ -33,7 +35,7 @@ var lastCount = 0
 var useCountdown = false
 
 var beatCounter = 1
-var halfBeatCounter = 0
+var halfBeatCounter = 1
 
 var loaded = false
 var muteVocals = false
@@ -44,6 +46,17 @@ var noteThread
 var notesFinished = false
 
 var chartType = null
+
+var crochet = 0
+var stepCrochet = 0
+
+var lastStep = 0
+var curStep = 0
+
+var lastBeat = 0
+var curBeat = 0
+
+var startingPosition = 0
 
 func _ready():
 	var streams = get_tree().current_scene.get_node("Music")
@@ -75,6 +88,11 @@ func _process(delta):
 		
 	var countdownMulti = ((countdown / (bpm / 60)) * 2)
 	songPositionMulti = MusicStream.get_playback_position() - countdownMulti
+	
+	crochet = (60 / bpm);
+	stepCrochet = crochet / 4;
+	
+	update_step()
 
 func _exit_tree():
 	noteThread.wait_to_finish()
@@ -104,12 +122,14 @@ func play_chart(song, difficulty, speed = 1):
 		"easy":
 			songDifficulty = 0
 		"normal":
-			songDifficulty = 0
+			songDifficulty = 1
 			difExt = ""
 		"hard":
-			songDifficulty = 0
+			songDifficulty = 2
 	
-	songData = load_song_json(songName, difExt)
+	if (songData == null):
+		songData = load_song_json(songName, difExt)
+	
 	var songPath = songData["_dir"]
 	
 	song_speed = speed
@@ -136,6 +156,12 @@ func play_chart(song, difficulty, speed = 1):
 	countdown = 3
 	useCountdown = true
 	
+	if (startingPosition != 0):
+		useCountdown = false
+		countdown = 0
+		
+		start_song()
+	
 	if (songData.has("type")):
 		chartType = songData["type"]
 	else:
@@ -149,6 +175,7 @@ func play_chart(song, difficulty, speed = 1):
 func change_bpm(newBpm):
 	bpm = float(newBpm)
 	
+	halfBeatCounter = 1
 	beatCounter = 1
 
 func create_notes():
@@ -161,6 +188,7 @@ func create_notes():
 	var last_note
 	
 	var sections = []
+	var events = []
 	
 	for section in songData["notes"]:
 		var section_time = (((60 / bpm) / 4) * 16) * sections.size()
@@ -177,6 +205,10 @@ func create_notes():
 			var strum_time = (note[0] + Settings.offset) / 1000
 			var sustain_length = int(note[2]) / 1000.0
 			var direction = int(note[1])
+			
+			if (startingPosition != 0):
+				if (strum_time < startingPosition + 2.5):
+					continue
 			
 			var arg3 = null
 			if (len(note) > 3):
@@ -201,31 +233,53 @@ func create_notes():
 				last_note = noteData
 			else:
 				last_note = noteData
+		
+		if (section.has("sectionEvents")):
+			for event in section["sectionEvents"]:
+				var eventData = [event[0] / 1000, event[1], event[2], event[3]]
 				
+				events.append(eventData)
+	
 	temp_array.append(last_note)
 	
-	var strum_times = []
-	
-	for tmp_note in temp_array:
-		strum_times.append(tmp_note[0])
-		
-	strum_times.sort()
-		
+	# sort notes ?
 	var notes = []
+	if (len(temp_array) > 1 && temp_array[0] != null):
+		var strum_times = []
 		
-	while !temp_array.empty():
-		var index = 0
-		
-		while strum_times[0] != temp_array[index][0]:
-			index += 1
-		
-		notes.append(temp_array[index])
-		
-		strum_times.remove(0)
-		temp_array.remove(index)
-		
+		for tmp_note in temp_array:
+			strum_times.append(tmp_note[0])
+				
+		strum_times.sort()
+			
+		while !temp_array.empty():
+			var index = 0
+			
+			while strum_times[0] != temp_array[index][0]:
+				index += 1
+			
+			notes.append(temp_array[index])
+			
+			strum_times.remove(0)
+			temp_array.remove(index)
+	
+	# sort events
+	var sortedEvents = []
+	for event in events:
+		sortedEvents.append(event[0])
+	
+	sortedEvents.sort()
+	var trueSortedEvents = []
+	
+	for sortedEvent in sortedEvents:
+		for event in events:
+			if (event[0] == sortedEvent):
+				trueSortedEvents.append(event)
+	
+	# set playState shit
 	playState.notes = notes
 	playState.sections = sections
+	playState.events = trueSortedEvents
 	
 	notesFinished = true
 
@@ -237,8 +291,8 @@ func countdown_process(delta):
 		countdown -= ((bpm / 60) / 2) * song_speed * delta
 	
 	if (countingDown):
-		var countdownSprite = playState.get_node("HUD/Countdown")
-		var stream = playState.get_node("Audio/CountdownStream")
+		var countdownSprite = playState.get_node_or_null("HUD/HudElements/Countdown")
+		var stream = playState.get_node_or_null("Audio/CountdownStream")
 	
 		countdownState = ceil((fmod(countdown / 5, countdown) * 10))
 		
@@ -290,8 +344,8 @@ func countdown_process(delta):
 			countdown = 0
 			
 func start_song():
-	MusicStream.play()
-	VocalStream.play()
+	MusicStream.play(startingPosition)
+	VocalStream.play(startingPosition)
 	
 	change_bpm(bpm)
 
@@ -301,7 +355,7 @@ func play_countdown_sound(stream, snd):
 		stream.play()
 
 func beat_process(delta):
-	beatCounter -= ((bpm / 60) * song_speed) * delta
+	#beatCounter -= ((bpm / 60) * song_speed) * delta
 	
 	if (beatCounter <= 0):
 		beatCounter = beatCounter + 1
@@ -312,10 +366,12 @@ func beat_process(delta):
 			emit_signal("half_beat_hit")
 			halfBeatCounter = 0
 
-func load_song_json(song, difExt=""):
+func load_song_json(song, difExt="", path=null):
 	difExt = difExt.to_lower()
 	
 	var songPath = "res://Assets/Songs/" + song + "/"
+	if (path != null):
+		songPath = path + "/"
 	
 	var directory = Directory.new();
 	if (!directory.dir_exists(songPath)):
@@ -352,3 +408,22 @@ func load_score(songName):
 	
 	var score = file.get_value("SCORES", songName, 0)
 	return score
+
+func update_step():
+	curStep = floor(songPositionMulti / stepCrochet);
+	if (curStep != lastStep):
+		emit_signal("on_step", curStep)
+	
+	curBeat = floor(curStep / 4);
+	if (curBeat != lastBeat):
+		emit_signal("on_beat", curBeat)
+		
+		halfBeatCounter += 1
+		emit_signal("beat_hit")
+		
+		if (halfBeatCounter >= 2):
+			emit_signal("half_beat_hit")
+			halfBeatCounter = 0
+	
+	lastStep = curStep
+	lastBeat = curBeat

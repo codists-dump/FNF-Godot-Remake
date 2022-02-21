@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=2]
+[gd_scene load_steps=17 format=2]
 
 [ext_resource path="res://Assets/Other/Fonts/vcr.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://Scripts/States/PlayState.gd" type="Script" id=2]
@@ -9,6 +9,8 @@
 [ext_resource path="res://Assets/Sprites/UI/healthBar.png" type="Texture" id=7]
 [ext_resource path="res://Scenes/States/PlayState/StrumLine.tscn" type="PackedScene" id=8]
 [ext_resource path="res://Scenes/Mobile/MobilePlayControls.tscn" type="PackedScene" id=9]
+[ext_resource path="res://Assets/Sprites/UI/progressBarBack.png" type="Texture" id=10]
+[ext_resource path="res://Assets/Sprites/UI/progressBarOver.png" type="Texture" id=11]
 
 [sub_resource type="Animation" id=6]
 resource_name = "Bop"
@@ -71,10 +73,22 @@ outline_size = 2
 outline_color = Color( 0, 0, 0, 1 )
 font_data = ExtResource( 1 )
 
+[sub_resource type="DynamicFont" id=7]
+size = 23
+outline_size = 2
+outline_color = Color( 0, 0, 0, 1 )
+font_data = ExtResource( 1 )
+
+[sub_resource type="DynamicFont" id=8]
+size = 52
+outline_size = 3
+outline_color = Color( 0, 0, 0, 1 )
+font_data = ExtResource( 1 )
+
 [node name="PlayState" type="Node2D"]
 script = ExtResource( 2 )
-PlayerStrumPath = NodePath("HUD/PlayerStrumLine")
-EnemyStrumPath = NodePath("HUD/EnemyStrumLine")
+PlayerStrumPath = NodePath("HUD/HudElements/PlayerStrumLine")
+EnemyStrumPath = NodePath("HUD/HudElements/EnemyStrumLine")
 PlayerCharacter = "bf"
 EnemyCharacter = "dad"
 GFCharacter = "gf"
@@ -83,34 +97,40 @@ GFCharacter = "gf"
 scale = Vector2( 0.7, 0.7 )
 transform = Transform2D( 0.7, 0, 0, 0.7, 0, 0 )
 
-[node name="Background" type="ColorRect" parent="HUD"]
+[node name="HudElements" type="Node2D" parent="HUD"]
+position = Vector2( 914.286, 514.286 )
+
+[node name="Background" type="ColorRect" parent="HUD/HudElements"]
+modulate = Color( 1, 1, 1, 0.164706 )
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_right = -836.0
-margin_bottom = -67.0
+margin_left = -914.286
+margin_top = -514.286
+margin_right = -954.286
+margin_bottom = -554.286
 rect_scale = Vector2( 4.12078, 1.57625 )
 color = Color( 0, 0, 0, 0 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Ratings" type="Node" parent="HUD"]
+[node name="Ratings" type="Node" parent="HUD/HudElements"]
 
-[node name="PlayerStrumLine" parent="HUD" instance=ExtResource( 8 )]
-position = Vector2( 1127.86, 150 )
+[node name="PlayerStrumLine" parent="HUD/HudElements" instance=ExtResource( 8 )]
+position = Vector2( 213.574, -364.286 )
 
-[node name="EnemyStrumLine" parent="HUD" instance=ExtResource( 8 )]
-position = Vector2( 213.571, 150 )
+[node name="EnemyStrumLine" parent="HUD/HudElements" instance=ExtResource( 8 )]
+position = Vector2( -700.715, -364.286 )
 
-[node name="HealthBar" type="TextureProgress" parent="HUD"]
+[node name="HealthBar" type="TextureProgress" parent="HUD/HudElements"]
 anchor_left = 0.359
 anchor_top = 1.269
 anchor_right = 0.359
 anchor_bottom = 1.269
-margin_left = 34.7657
-margin_top = -11.6801
-margin_right = 635.766
-margin_bottom = 7.31995
+margin_left = -421.503
+margin_top = 385.525
+margin_right = 179.497
+margin_bottom = 404.525
 rect_scale = Vector2( 1.4, 1.4 )
 value = 50.0
 texture_under = ExtResource( 7 )
@@ -122,32 +142,33 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Icons" type="Node2D" parent="HUD/HealthBar"]
+[node name="Icons" type="Node2D" parent="HUD/HudElements/HealthBar"]
 position = Vector2( 300, 0 )
 scale = Vector2( 1.4, 1.4 )
 
-[node name="Enemy" type="Sprite" parent="HUD/HealthBar/Icons"]
+[node name="Enemy" type="Sprite" parent="HUD/HudElements/HealthBar/Icons"]
 position = Vector2( -38.4153, 0 )
 scale = Vector2( 0.714286, 0.714286 )
 texture = ExtResource( 5 )
 hframes = 2
 
-[node name="Player" type="Sprite" parent="HUD/HealthBar/Icons"]
+[node name="Player" type="Sprite" parent="HUD/HudElements/HealthBar/Icons"]
 position = Vector2( 33.6135, 0 )
 scale = Vector2( 0.714286, 0.714286 )
 texture = ExtResource( 4 )
 flip_h = true
 hframes = 2
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="HUD/HealthBar/Icons"]
+[node name="AnimationPlayer" type="AnimationPlayer" parent="HUD/HudElements/HealthBar/Icons"]
 root_node = NodePath("../..")
 anims/Bop = SubResource( 6 )
 anims/RESET = SubResource( 4 )
 
-[node name="TextBar" type="Label" parent="HUD"]
-margin_top = 960.286
-margin_right = 1829.0
-margin_bottom = 1008.29
+[node name="TextBar" type="Label" parent="HUD/HudElements"]
+margin_left = -914.286
+margin_top = 446.0
+margin_right = 914.714
+margin_bottom = 494.004
 custom_fonts/font = SubResource( 5 )
 text = "Health: 0%"
 align = 1
@@ -155,11 +176,51 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Countdown" type="Sprite" parent="HUD"]
+[node name="Countdown" type="Sprite" parent="HUD/HudElements"]
 visible = false
-position = Vector2( 914.286, 514.286 )
+position = Vector2( 0.000488281, 0.000183105 )
 texture = ExtResource( 3 )
 hframes = 3
+
+[node name="TopBar" type="Node2D" parent="HUD/HudElements"]
+position = Vector2( -914.286, -514.286 )
+
+[node name="Progress" type="TextureProgress" parent="HUD/HudElements/TopBar"]
+margin_right = 1826.0
+margin_bottom = 29.0
+step = 0.01
+value = 50.0
+texture_under = ExtResource( 10 )
+texture_progress = ExtResource( 11 )
+tint_under = Color( 1, 1, 1, 0.145098 )
+tint_progress = Color( 1, 1, 1, 0.376471 )
+nine_patch_stretch = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TopBarLabel" type="Label" parent="HUD/HudElements/TopBar"]
+margin_top = 3.0
+margin_right = 1829.0
+margin_bottom = 29.0
+custom_fonts/font = SubResource( 7 )
+text = "No-villians | HARD | 0:00"
+align = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="BotplayLabel" type="Label" parent="HUD/HudElements"]
+margin_left = -137.286
+margin_top = -385.857
+margin_right = 136.714
+margin_bottom = -339.857
+custom_fonts/font = SubResource( 8 )
+text = "BOTPLAY"
+align = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Audio" type="Node2D" parent="."]
 
@@ -192,8 +253,14 @@ position = Vector2( 640, 360 )
 current = true
 smoothing_enabled = true
 
+[node name="Background" type="Node2D" parent="."]
+
 [node name="Characters" type="Node2D" parent="."]
+
+[node name="Foreground" type="Node2D" parent="."]
 
 [node name="Ratings" type="Node" parent="."]
 
 [node name="MobilePlayStateControls" parent="." instance=ExtResource( 9 )]
+
+[node name="Timer" type="Timer" parent="."]

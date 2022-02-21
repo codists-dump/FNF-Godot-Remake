@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=2]
+[gd_scene load_steps=17 format=2]
 
 [ext_resource path="res://Scripts/Objects/Character.gd" type="Script" id=1]
 [ext_resource path="res://Assets/Sprites/Characters/bf_sheet.png" type="Texture" id=2]
@@ -33,6 +33,21 @@ tracks/0/keys = {
 "transitions": PoolRealArray( 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ),
 "update": 1,
 "values": [ 28, 29, 30, 31, 32, 33, 31, 32, 33, 31, 32, 33, 31, 32, 33, 31, 32, 33 ]
+}
+
+[sub_resource type="Animation" id=16]
+resource_name = "hey"
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.1, 0.2 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 1,
+"values": [ 5, 6, 7 ]
 }
 
 [sub_resource type="Animation" id=15]
@@ -213,6 +228,7 @@ frame = 28
 autoplay = "idle"
 anims/RESET = SubResource( 13 )
 anims/dodge = SubResource( 14 )
+anims/hey = SubResource( 16 )
 anims/hit = SubResource( 15 )
 anims/idle = SubResource( 1 )
 anims/singDOWN = SubResource( 2 )

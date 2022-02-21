@@ -16,6 +16,7 @@ var options = {
 	"APPEARENCE": {
 		"CAMERA MOVEMENT": ["cameraMovement", "Moves the camera depending on what notes been hit.", true],
 		"BACKGROUND OPACITY": ["backgroundOpacity", "Darkens the game so you can focus on hitting notes. (tryhard)", true, "percent"],
+		"NOTE SPLASHES": ["noteSplashes", "Turn off the splashes that appear when getting sicks.", true],
 			"RATINGS": [null, "", true, "seperator"],
 		"HUD RATINGS": ["hudRatings", "Show the ratings on the HUD layer instead of the GAME layer.", true],
 		"HUD RATINGS OFFSET": ["hudRatingsOffset", "Changes the on-screen position of the HUD Ratings.", true],

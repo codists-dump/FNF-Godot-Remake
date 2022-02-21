@@ -19,26 +19,26 @@ position = Vector2( 640, 566 )
 [node name="Rating" parent="Positions" index="3"]
 position = Vector2( 770, 193 )
 
-[node name="Background" type="ParallaxBackground" parent="." index="3"]
+[node name="Camera" parent="." index="3"]
+zoom = Vector2( 1.1, 1.1 )
 
-[node name="Background" type="ParallaxLayer" parent="Background" index="0"]
+[node name="ParallaxBackground" type="ParallaxBackground" parent="Background" index="0"]
+
+[node name="Background" type="ParallaxLayer" parent="Background/ParallaxBackground" index="0"]
 motion_scale = Vector2( 0.8, 0.8 )
 
-[node name="Stageback" type="Sprite" parent="Background/Background" index="0"]
+[node name="Stageback" type="Sprite" parent="Background/ParallaxBackground/Background" index="0"]
 position = Vector2( 692, 196 )
 texture = ExtResource( 6 )
 
-[node name="Stage" type="ParallaxLayer" parent="Background" index="1"]
+[node name="Stage" type="ParallaxLayer" parent="Background/ParallaxBackground" index="1"]
 
-[node name="StageFront" type="Sprite" parent="Background/Stage" index="0"]
+[node name="StageFront" type="Sprite" parent="Background/ParallaxBackground/Stage" index="0"]
 position = Vector2( 692, 775 )
 texture = ExtResource( 5 )
 
-[node name="Foreground" type="ParallaxLayer" parent="Background" index="2"]
+[node name="Foreground" type="ParallaxLayer" parent="Background/ParallaxBackground" index="2"]
 
-[node name="Stagecurtains" type="Sprite" parent="Background/Foreground" index="0"]
+[node name="Stagecurtains" type="Sprite" parent="Background/ParallaxBackground/Foreground" index="0"]
 position = Vector2( 692, 196 )
 texture = ExtResource( 7 )
-
-[node name="Camera" parent="." index="4"]
-zoom = Vector2( 1.1, 1.1 )

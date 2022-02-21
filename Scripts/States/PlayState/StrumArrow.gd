@@ -10,8 +10,11 @@ var desatTexture = preload("res://Assets/Sprites/Notes/Desat_Strum_Sprites.png")
 var overlayTexture = preload("res://Assets/Sprites/Notes/Desat_Strum_Sprites_Overlay.png")
 var noteColor
 
+var tweenScale = 1
+
 func _ready():
-	setup_colors()
+	if not Engine.editor_hint:
+		setup_colors()
 
 func setup_colors():
 	match note_type:

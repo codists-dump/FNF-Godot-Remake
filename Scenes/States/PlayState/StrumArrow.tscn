@@ -51,12 +51,14 @@ tracks/0/keys = {
 
 [node name="StrumArrow" type="Node2D"]
 script = ExtResource( 1 )
+animFrame = 1
 
 [node name="Sprite" type="Sprite" parent="."]
 position = Vector2( 0, 1 )
 texture = ExtResource( 2 )
 hframes = 6
 vframes = 4
+frame = 1
 region_rect = Rect2( 310, 234, 153, 157 )
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]

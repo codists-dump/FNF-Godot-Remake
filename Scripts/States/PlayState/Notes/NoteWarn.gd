@@ -1,6 +1,7 @@
 extends "res://Scripts/States/PlayState/Notes/Note.gd"
 
 func _ready():
+	holdHealth = 0
 	hasArrowFrames = false
 	
 	holdArray = desatHolds

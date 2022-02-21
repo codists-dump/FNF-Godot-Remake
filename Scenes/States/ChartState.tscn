@@ -1,0 +1,85 @@
+[gd_scene load_steps=11 format=2]
+
+[ext_resource path="res://Assets/Sprites/UI/ChartEditor/tiledBG.png" type="Texture" id=1]
+[ext_resource path="res://Scenes/States/ChartState/ChartLine.tscn" type="PackedScene" id=2]
+[ext_resource path="res://Scripts/States/ChartState.gd" type="Script" id=3]
+[ext_resource path="res://Assets/Other/Fonts/vcr.ttf" type="DynamicFontData" id=4]
+[ext_resource path="res://Assets/Sounds/hit_sound.ogg" type="AudioStream" id=5]
+[ext_resource path="res://Scenes/States/ChartState/ChartEventCreatePopup.tscn" type="PackedScene" id=6]
+[ext_resource path="res://Scenes/States/ChartState/NoteSelect.tscn" type="PackedScene" id=7]
+[ext_resource path="res://Scenes/States/ChartState/ChartSideHUD.tscn" type="PackedScene" id=8]
+[ext_resource path="res://Scenes/States/ChartState/ChartStrumLine.tscn" type="PackedScene" id=10]
+
+[sub_resource type="DynamicFont" id=1]
+size = 20
+outline_color = Color( 0, 0, 0, 1 )
+font_data = ExtResource( 4 )
+
+[node name="ChartState" type="Node2D"]
+script = ExtResource( 3 )
+
+[node name="Camera" type="Camera2D" parent="."]
+position = Vector2( 640, 0 )
+current = true
+
+[node name="Background" type="CanvasLayer" parent="."]
+layer = -10
+
+[node name="BG" type="TextureRect" parent="Background"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_right = 1280.0
+margin_bottom = 720.0
+texture = ExtResource( 1 )
+expand = true
+stretch_mode = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HUD" type="CanvasLayer" parent="."]
+
+[node name="InfoLabel" type="Label" parent="HUD"]
+margin_left = 218.0
+margin_top = 27.0
+margin_right = 445.0
+margin_bottom = 240.0
+custom_fonts/font = SubResource( 1 )
+text = "INFO TEXT"
+align = 2
+autowrap = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="CreateEventPopup" parent="HUD" instance=ExtResource( 6 )]
+
+[node name="NoteSelect" parent="HUD" instance=ExtResource( 7 )]
+visible = false
+margin_left = 828.0
+margin_top = 20.0
+margin_right = 888.0
+margin_bottom = 84.0
+
+[node name="ChartSideHUD" parent="HUD" instance=ExtResource( 8 )]
+margin_left = 897.0
+margin_top = 37.0
+margin_right = 1209.0
+margin_bottom = 456.0
+
+[node name="ChartLine" parent="." instance=ExtResource( 2 )]
+position = Vector2( 471, 27 )
+
+[node name="ChartStrumLine" parent="." instance=ExtResource( 10 )]
+
+[node name="MusicStream" type="AudioStreamPlayer" parent="."]
+bus = "Music"
+
+[node name="VoicesStream" type="AudioStreamPlayer" parent="."]
+bus = "Vocals"
+
+[node name="HitSoundStream" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 5 )
+bus = "Hitsounds"
+
+[connection signal="event_created" from="HUD/CreateEventPopup" to="." method="_on_CreateEventPopup_event_created"]

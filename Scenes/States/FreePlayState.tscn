@@ -23,6 +23,7 @@ __meta__ = {
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
 [node name="ChoiceMenu" parent="CanvasLayer" instance=ExtResource( 1 )]
+canUseFinder = true
 
 [node name="SettingsBox" type="ColorRect" parent="CanvasLayer"]
 margin_left = 843.0

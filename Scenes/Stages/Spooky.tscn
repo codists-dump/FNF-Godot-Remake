@@ -18,14 +18,14 @@ position = Vector2( 639, 615 )
 [node name="Rating" parent="Positions" index="3"]
 position = Vector2( 766, 413 )
 
-[node name="Background" type="ParallaxBackground" parent="." index="3"]
+[node name="Camera" parent="." index="3"]
+offset = Vector2( 0, -50 )
 
-[node name="Background" type="ParallaxLayer" parent="Background" index="0"]
+[node name="ParallaxBackground" type="ParallaxBackground" parent="Background" index="0"]
+
+[node name="Background" type="ParallaxLayer" parent="Background/ParallaxBackground" index="0"]
 motion_scale = Vector2( 0.95, 0.95 )
 
-[node name="SpookyBg" type="Sprite" parent="Background/Background" index="0"]
+[node name="SpookyBg" type="Sprite" parent="Background/ParallaxBackground/Background" index="0"]
 position = Vector2( 678, 363 )
 texture = ExtResource( 5 )
-
-[node name="Camera" parent="." index="4"]
-offset = Vector2( 0, -50 )

@@ -10,6 +10,7 @@ var song = "tutorial"
 var difficulty = "hard"
 var speed = 1
 var storySongs = false
+var chartingMode = false
 
 var pos = 0
 
@@ -50,7 +51,7 @@ func _on_AnimationPlayer_animation_finished(anim_name):
 			
 			$AnimationPlayer.play("bop")
 		"confirm":
-			Main.change_playstate(song, difficulty, speed, storySongs, true)
+			Main.change_playstate(song, difficulty, speed, storySongs, true, null, chartingMode)
 
 func beat():
 	if (doBop):
