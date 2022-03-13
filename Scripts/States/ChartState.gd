@@ -176,6 +176,8 @@ func load_song():
 func change_bpm():
 	crochet = (60 / songData["bpm"])
 	stepCrochet = (crochet / 4)
+	
+	print(stepCrochet)
 
 func rearrange_notes():
 	var allNotes = []
@@ -263,6 +265,8 @@ func reset_hit_notes():
 func convert_mouse_pos(mousePos):
 	var chartLine = $ChartLine
 	var pos = mousePos / chartLine.squareSize
+	
+	print(pos)
 	
 	if (pos.x > 7):
 		return

@@ -135,6 +135,8 @@ func draw_notes():
 			
 			draw_texture_rect_region(texture, rect, srcRect, color)
 			
+			draw_string(FONT, rect.position, str(floor((note[0] / 1000) / (16 * chartState.stepCrochet))))
+			
 
 func check_for_notetype(noteType):
 	var curNote = noteType
