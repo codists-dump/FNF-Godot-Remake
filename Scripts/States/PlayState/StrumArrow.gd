@@ -10,7 +10,7 @@ var desatTexture = preload("res://Assets/Sprites/Notes/Desat_Strum_Sprites.png")
 var overlayTexture = preload("res://Assets/Sprites/Notes/Desat_Strum_Sprites_Overlay.png")
 var noteColor
 
-var tweenScale = 1
+var moveScale = 1
 
 func _ready():
 	if not Engine.editor_hint:
@@ -39,10 +39,6 @@ func setup_colors():
 		add_child(overlay, true)
 
 func _process(_delta):
-	if not Engine.editor_hint:
-		if (Settings.downScroll):
-			scale.y = -1
-	
 	$Sprite.frame = animFrame + (note_type * 6)
 	
 	var overlay = get_node_or_null("Overlay")

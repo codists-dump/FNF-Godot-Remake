@@ -72,7 +72,7 @@ func _input(event):
 						MusicStream.stop()
 						VocalStream.stop()
 				KEY_ESCAPE:
-					Main.change_playstate(song, dif, 1, null, true, null, true, MusicStream.get_playback_position() - 2.5 - 0.002)
+					Main.change_playstate(song, dif, 1, null, true, null, true, MusicStream.get_playback_position() - 0.002)
 		else:
 			match (event.scancode):
 				KEY_E:
@@ -150,9 +150,9 @@ func _process(_delta):
 				
 				$HitSoundStream.play()
 				unhitNotes.erase(note)
-	else:
-		if (MusicStream.get_playback_position() > MusicStream.stream.get_length()):
-			change_song_pos(0)
+	
+	if (MusicStream.get_playback_position() >= MusicStream.stream.get_length()):
+		change_song_pos(0)
 
 	update_section()
 	
@@ -164,8 +164,6 @@ func update():
 	$ChartLine.update()
 
 func load_song():
-	print(songData)
-	
 	if (songData == null):
 		var usedDif = dif
 		if (usedDif != ""):
@@ -178,12 +176,37 @@ func load_song():
 func change_bpm():
 	crochet = (60 / songData["bpm"])
 	stepCrochet = (crochet / 4)
+
+func rearrange_notes():
+	var allNotes = []
+	
+	for section in songData["notes"]:
+		for note in section["sectionNotes"]:
+			allNotes.append(note)
+	
+	songData["notes"] = []
+	
+	var daSection = 0
+	var tempSectionArray = []
+	for note in allNotes:
+		var sectionIn = floor((note[0] / 1000) / (16 * stepCrochet))
+		
+		if (daSection != sectionIn):
+			if (!tempSectionArray.empty()):
+				var dict = {
+					"sectionNotes": tempSectionArray,
+					"mustHitSection": false
+				}
+				songData["notes"].append(dict)
+			tempSectionArray = []
+		daSection = sectionIn
+		
+		tempSectionArray.append(note)
 	
 func load_music():
 	var songPath = songData["_dir"]
 	
 	MusicStream.stream = Mods.mod_ogg(songPath + "Inst.ogg")
-	print(songPath)
 	
 	if (songData["needsVoices"]):
 		VocalStream.stream = Mods.mod_ogg(songPath + "Voices.ogg")
@@ -301,10 +324,10 @@ func add_event(section, step = curStep, eventName = "event", eventColor = Color.
 	
 	songData["notes"][section]["sectionEvents"].append(eventData)
 
-func _on_CreateEventPopup_event_created(step, eventName, eventColor, eventArgs):
-	add_event(curSection, step, eventName, eventColor, eventArgs)
-
 func load_song_script():
 	var file = Mods.mod_script(Mods.songsDir + "/" + song + "/script.gd")
 	if (file is Object):
 		songScript = file.new()
+
+func _on_CreateEventPopup_event_created(step, eventName, eventColor, eventArgs):
+	add_event(curSection, step, eventName, eventColor, eventArgs)

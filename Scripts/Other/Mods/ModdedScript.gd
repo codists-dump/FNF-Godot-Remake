@@ -51,6 +51,8 @@ func _ready():
 	Conductor.connect("on_beat", self, "_on_beat")
 	
 	playState.connect("event_activated", self, "_on_event")
+	playState.connect("note_hit", self, "_on_note_hit")
+	playState.connect("note_missed", self, "_on_note_missed")
 
 func _process(_delta):
 	curStep = Conductor.curStep
@@ -65,7 +67,16 @@ func _on_beat(_beat):
 func _tween_finished(_object, _key):
 	pass
 
+func _clear_tween(_object, _key):
+	pass
+	
 func _on_event(_event, _args):
+	pass
+
+func _on_note_hit(_rating, _must_hit, _note_type, _timing):
+	pass
+	
+func _on_note_missed():
 	pass
 
 # Tween a node's property from a start value to a end value.
@@ -74,12 +85,15 @@ func tween(node, property, start_value, end_value, duration, trans_type = 0, eas
 	var tween = Tween.new()
 	
 	tween.connect("tween_completed", self, "_tween_finished")
+	tween.connect("tween_completed", self, "_clear_tween")
 	
 	add_child(tween)
 	tween.interpolate_property(node, property,
 		start_value, end_value, duration,
 		trans_type, ease_type)
 	tween.start()
+	
+	return tween
 
 # Zoom the camera to the defined zoom value. If instant is false the camera will tween to the zoom value.
 # ex. zoom_camera(0.8, false, 0.4)

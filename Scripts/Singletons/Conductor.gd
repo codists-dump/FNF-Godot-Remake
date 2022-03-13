@@ -152,15 +152,12 @@ func play_chart(song, difficulty, speed = 1):
 		VocalStream.pitch_scale = song_speed
 	else:
 		VocalStream.stream = null
+		
+	MusicStream.seek(startingPosition)
+	VocalStream.seek(startingPosition)
 	
 	countdown = 3
 	useCountdown = true
-	
-	if (startingPosition != 0):
-		useCountdown = false
-		countdown = 0
-		
-		start_song()
 	
 	if (songData.has("type")):
 		chartType = songData["type"]
@@ -207,7 +204,7 @@ func create_notes():
 			var direction = int(note[1])
 			
 			if (startingPosition != 0):
-				if (strum_time < startingPosition + 2.5):
+				if (strum_time < startingPosition):
 					continue
 			
 			var arg3 = null

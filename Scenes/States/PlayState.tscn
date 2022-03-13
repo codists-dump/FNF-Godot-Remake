@@ -101,20 +101,16 @@ transform = Transform2D( 0.7, 0, 0, 0.7, 0, 0 )
 position = Vector2( 914.286, 514.286 )
 
 [node name="Background" type="ColorRect" parent="HUD/HudElements"]
-modulate = Color( 1, 1, 1, 0.164706 )
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = -914.286
-margin_top = -514.286
-margin_right = -954.286
-margin_bottom = -554.286
-rect_scale = Vector2( 4.12078, 1.57625 )
+margin_left = -914.0
+margin_top = -514.0
+margin_right = 306.0
+margin_bottom = 172.0
+rect_scale = Vector2( 1.5, 1.5 )
 color = Color( 0, 0, 0, 0 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
-[node name="Ratings" type="Node" parent="HUD/HudElements"]
+[node name="Ratings" type="Node2D" parent="HUD/HudElements"]
 
 [node name="PlayerStrumLine" parent="HUD/HudElements" instance=ExtResource( 8 )]
 position = Vector2( 213.574, -364.286 )
@@ -176,12 +172,6 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Countdown" type="Sprite" parent="HUD/HudElements"]
-visible = false
-position = Vector2( 0.000488281, 0.000183105 )
-texture = ExtResource( 3 )
-hframes = 3
-
 [node name="TopBar" type="Node2D" parent="HUD/HudElements"]
 position = Vector2( -914.286, -514.286 )
 
@@ -221,6 +211,12 @@ align = 1
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="Countdown" type="Sprite" parent="HUD/HudElements"]
+visible = false
+position = Vector2( 0.000488281, 0.000183105 )
+texture = ExtResource( 3 )
+hframes = 3
 
 [node name="Audio" type="Node2D" parent="."]
 

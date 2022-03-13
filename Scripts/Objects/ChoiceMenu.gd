@@ -61,7 +61,6 @@ func _input(event):
 				var charString = OS.get_scancode_string(event.scancode).to_lower()
 					
 				finderString += charString
-				print(finderString)
 				
 				for option in options:
 					var optionName = option.to_lower()

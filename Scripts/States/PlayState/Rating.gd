@@ -49,8 +49,6 @@ func create_numbers():
 		var pos = Vector2(sep * i, 0)
 		var number = str(combo).substr(trueLength-(i+1), 1)
 		create_number(pos, number)
-	
-	print(numberVsps)
 
 func create_number(pos, number):
 	var num = Sprite.new()

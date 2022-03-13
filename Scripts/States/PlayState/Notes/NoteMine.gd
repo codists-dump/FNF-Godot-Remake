@@ -1,4 +1,4 @@
-extends "res://Scripts/States/PlayState/Notes/Note.gd"
+extends "res://Scripts/States/PlayState/Notes/Note-Old.gd"
 
 func _ready():
 	holdHealth = 0

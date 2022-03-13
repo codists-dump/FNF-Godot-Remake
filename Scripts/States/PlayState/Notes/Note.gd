@@ -24,7 +24,6 @@ var holdHealth = 0.05
 var hasArrowFrames = true
 
 onready var holdWindow = ((60 / Conductor.bpm) / 4)
-var tweenScale = 1
 var changingTweenScale = false
 
 var noteColor
@@ -44,74 +43,44 @@ var desatHolds = [preload("res://Assets/Sprites/Notes/Holds/desat_line.png"), pr
 
 var holdArray
 
+var prevSongPos = 0
+var realSongPos = 0
+
 func _ready():
-	var songSpeed = get_tree().current_scene.current_scene.speed
-	
-	SCROLL_TIME = SCROLL_TIME / songSpeed
-	sustain_length = sustain_length / Conductor.song_speed
-	
 	playState = get_tree().current_scene.current_scene
+
+func _process(_delta):
+	var moveScale = strum_lane.moveScale
 	
-	tweenScale = strum_lane.tweenScale
+	# set the notes position
+	if (prevSongPos != Conductor.songPositionMulti):
+		realSongPos = Conductor.songPositionMulti
+	else:
+		realSongPos += _delta
 	
-	if (visible):
-		$Tween.interpolate_property(self, "position:y", ((SCROLL_DISTANCE * Conductor.scroll_speed) * tweenScale), 0, SCROLL_TIME / Conductor.scroll_speed)
-		$Tween.start()
-		
-	match note_type:
-		Note.Left:
-			key = "left"
-			noteColor = Settings.noteColorLeft
-		Note.Down:
-			key = "down"
-			noteColor = Settings.noteColorDown
-		Note.Up:
-			key = "up"
-			noteColor = Settings.noteColorUp
-		Note.Right:
-			key = "right"
-			noteColor = Settings.noteColorRight
+	prevSongPos = Conductor.songPositionMulti
 	
-	holdArray = holdSprs[key]
+	var toStrumTime = (strum_time - realSongPos)
 	
-	if (sustain_length > 0):
-		holdNote = true
-		
-	setup_note_colors()
-	$Line2D.texture = holdArray[0]
-		
-func setup_note_colors():
-	if (hasArrowFrames):
-		if (Settings.customNoteColors):
-			$Sprite.modulate = noteColor
-			$Sprite.texture = desatNoteTexture
-			
-			var overlay = Sprite.new()
-			overlay.texture = noteOverlayTexture
-			overlay.vframes = $Sprite.vframes
-			overlay.name = "Overlay"
-			add_child(overlay, true)
-			
-			holdArray = desatHolds
-			$Line2D.modulate = noteColor
+	position.y = ((toStrumTime * moveScale) * 1000) * (Conductor.scroll_speed) + strum_lane.position.y
+	position.x = strum_lane.position.x
+	$Sprite.frame = note_type
 	
-func _on_Tween_tween_completed(_object, _key):
-	if (changingTweenScale):
-		changingTweenScale = false
-		return
+	var worstTiming = playState.HIT_TIMINGS[playState.HIT_TIMINGS.keys()[0]][0]
 	
-	if (strum_lane != null):
-		if (missed):
-			note_miss(true)
-		
+	# detect non-player hits and misses
+	if (!missed):
 		if (!must_hit || Settings.botPlay):
-			note_hit(0)
-		else:
-			missed = true
-			$Tween.interpolate_property(self, "position:y", 0, ((-SCROLL_DISTANCE * Conductor.scroll_speed) * tweenScale), SCROLL_TIME / Conductor.scroll_speed)
+			if (toStrumTime <= 0):
+				note_hit(toStrumTime)
 			
-			if (sustain_length <= 0):
-				$Tween.start()
+		if (toStrumTime * 1000 < -worstTiming):
+			note_miss(true)
+	else:
+		modulate.a = 0.5
+		
+		if (toStrumTime * 1000 < -worstTiming * 2):
+			queue_free()
 
 func note_hit(timing):
 	var animPlayer = strum_lane.get_node("AnimationPlayer")
@@ -121,114 +90,9 @@ func note_hit(timing):
 	if (!wasHit):
 		playState.on_hit(must_hit, note_type, timing)
 	
-	if (!holdNote):
-		queue_free()
-	else:
-		wasHit = true
-		held = true
-		
-		$Sprite.visible = false
-		$Tween.stop_all()
+	queue_free()
 	
 func note_miss(passed):
 	playState.on_miss(must_hit, note_type, passed)
 	
-	queue_free()
-
-func _process(_delta):
-	$Sprite.offset.y = strum_lane.position.y 
-	$Line2D.position.y = strum_lane.position.y 
-	
-	if (strum_lane.tweenScale != tweenScale):
-		changingTweenScale = true
-		
-		tweenScale = strum_lane.tweenScale
-		
-		var lastTime = $Tween.tell()
-		print(lastTime)
-		$Tween.stop_all()
-		
-		$Tween.interpolate_property(self, "position:y", ((SCROLL_DISTANCE * Conductor.scroll_speed) * tweenScale), 0, (SCROLL_TIME / Conductor.scroll_speed))
-		$Tween.start()
-		$Tween.seek(lastTime)
-	
-	if (missed && $Tween.tell() > 0.2):
-		if (sustain_length > 0):
-			$Tween.stop_all()
-			sustain_length -= _delta
-			playState.health -= holdHealth
-		else:
-			$Tween.remove_all()
-			note_miss(true)
-	
-	if (Settings.downScroll):
-		scale.y = -1
-		
-	if (holdNote):
-		var multi = 1
-		if (Settings.downScroll || tweenScale < 0):
-			multi = -1
-		
-		# awesome hold note math magic by Scarlett
-		var lineY = (sustain_length * (SCROLL_DISTANCE * Conductor.scroll_speed * Conductor.scroll_speed / SCROLL_TIME) * multi) - holdSprs[key][1].get_height()
-		if (abs(lineY) <= 0):
-			lineY = 0
-		
-		$Line2D.points[1] = Vector2(0, lineY)
-		update()
-		
-	if (held):
-		$Line2D.position.y = 0
-		
-		
-		var animPlayer = strum_lane.get_node("AnimationPlayer")
-		animPlayer.play("hit")
-		
-		sustain_length -= _delta
-		if (must_hit):
-			playState.health += holdHealth
-		
-		if (sustain_length <= 0):
-			queue_free()
-			
-		position.y = strum_lane.position.y
-		
-		var character = playState.EnemyCharacter
-		if (must_hit):
-			character = playState.PlayerCharacter
-			
-		character.idleTimer = 0.2
-		
-		var animName = playState.player_sprite(note_type, "")
-		if (character.get_node("AnimationPlayer").get_current_animation_position() >= 0.18):
-			character.play(animName)
-		
-		if (must_hit && !Settings.botPlay):
-			if (!Input.is_action_pressed(key)):
-				if (sustain_length <= holdWindow):
-					queue_free()
-				held = false
-				animPlayer.play("idle")
-				$Tween.resume_all()
-	
-	if (hasArrowFrames):
-		$Sprite.frame = note_type
-		
-		var overlay = get_node_or_null("Overlay")
-		if (overlay != null):
-			overlay.frame = note_type
-			overlay.visible = $Sprite.visible
-
-func _draw():
-	if (holdNote):
-		var pos = Vector2($Line2D.points[1].x - 25, $Line2D.points[1].y)
-		
-		var lineHeight = clamp($Line2D.points[1].y, 0, holdArray[1].get_height())
-		
-		var size = Vector2(holdArray[1].get_size().x, lineHeight)
-		var rect = Rect2(pos, size)
-		
-		var color = $Line2D.modulate
-		color.a = $Line2D.default_color.a
-		
-		draw_texture_rect(holdArray[1], rect, false, color)
+	missed = true

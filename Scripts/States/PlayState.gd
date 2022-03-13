@@ -2,6 +2,9 @@ extends Node2D
 
 signal event_activated(eventName, eventArgs)
 
+signal note_hit(rating, must_hit, note_type, timing)
+signal note_missed()
+
 # constants
 # hit timings and windows
 # {rating name: [min ms, score]}
@@ -284,7 +287,7 @@ func get_event():
 			events.erase(event)
 		
 		if (Conductor.startingPosition != 0):
-			if (event[0] < Conductor.startingPosition + 2.5):
+			if (event[0] < Conductor.startingPosition):
 				return
 		
 		emit_signal("event_activated", event[1], event[3])
@@ -382,10 +385,9 @@ func on_hit(must_hit, note_type, timing):
 					$Camera.position = character.position + Vector2(offsetVector.x, offsetVector.y)
 				else:
 					$Camera.position = character.position + Vector2(-offsetVector.x, offsetVector.y)
-			
+	
+	var rating = get_rating(timing)
 	if (must_hit):
-		var rating = get_rating(timing)
-
 		var timingData = HIT_TIMINGS[rating]
 		score += timingData[1]
 		health += 1.5
@@ -433,6 +435,8 @@ func on_hit(must_hit, note_type, timing):
 		
 		create_rating(HIT_TIMINGS.keys().find(rating))
 		
+	emit_signal("note_hit", rating, must_hit, note_type, timing)
+		
 	Conductor.muteVocals = false
 
 func on_miss(must_hit, note_type, passed = false):
@@ -455,6 +459,7 @@ func on_miss(must_hit, note_type, passed = false):
 	else:
 		realMisses += 1
 		Conductor.muteVocals = true
+		emit_signal("note_missed")
 	
 	if (combo > 0):
 		combo = 0
@@ -669,23 +674,25 @@ func setup_icon(node, character):
 	
 func setup_strums():
 	if (Settings.downScroll):
-		PlayerStrum.position.y = 890
-		PlayerStrum.scale.y = -PlayerStrum.scale.y
+		PlayerStrum.position.y = 386
+		for button in PlayerStrum.get_node("Buttons").get_children():
+			button.moveScale = -1
 		
-		EnemyStrum.position.y = 890
-		EnemyStrum.scale.y = -EnemyStrum.scale.y
+		EnemyStrum.position.y = 386
+		for button in EnemyStrum.get_node("Buttons").get_children():
+			button.moveScale = -1
 		
-		$HUD/HudElements/HealthBar.rect_position.y = 100
-		$HUD/HudElements/TextBar.rect_position.y = 50
+		$HUD/HudElements/HealthBar.rect_position.y = -404
+		$HUD/HudElements/TextBar.rect_position.y = -454
 		
 	if (Settings.middleScroll):
-		PlayerStrum.position.x = 675
+		PlayerStrum.position.x = -241
 		
 		if (Settings.middleScrollPreview):
 			if (!Settings.downScroll):
-				EnemyStrum.position = Vector2(145, 300)
+				EnemyStrum.position = Vector2(-751, -204)
 			else:
-				EnemyStrum.position = Vector2(145, 730)
+				EnemyStrum.position = Vector2(-751, 226)
 			
 			EnemyStrum.scale = EnemyStrum.scale * 0.5
 		else:
@@ -708,9 +715,9 @@ func create_rating(rating):
 		ratingObj.position = $Positions/Rating.position
 		$Ratings.add_child(ratingObj)
 	else:
-		ratingObj.position = Settings.hudRatingsOffset / 0.7
+		ratingObj.position = (Settings.hudRatingsOffset / 0.7) - Vector2(896, 504)
 		ratingObj.get_node("Sprite").scale = Vector2(1, 1)
-		$HUD/HudElements.add_child(ratingObj)
+		$HUD/HudElements/Ratings.add_child(ratingObj)
 
 func restart_playstate():
 	storySongs.push_front("awesome")

@@ -77,7 +77,7 @@ func play(animName, newAnimTimer = 0):
 		$AnimationPlayer.play(animName)
 		
 		animTimer = newAnimTimer
-		idleTimer = 0.5
+		idleTimer = 0.8
 	
 func idle_dance():
 	if (animTimer > 0):
