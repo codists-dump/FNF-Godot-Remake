@@ -53,6 +53,7 @@ var combo = 0
 
 var totalHitNotes = 0
 var hitNotes = 0
+var isGFC = true
 
 # story vars
 var storyMode = false
@@ -399,6 +400,9 @@ func on_hit(must_hit, note_type, timing):
 		hitNotes += timingData[2]
 		totalHitNotes += 1
 		
+		if (rating != "sick" && rating != "good"):
+			isGFC = false
+		
 		if (rating == "sick"):
 			var splash = NOTE_SPLASH.instance()
 			var num = rng.randi_range(0, 1)
@@ -554,10 +558,13 @@ func health_bar_process(delta):
 	
 	$HUD/HudElements/TextBar.text = "Score: " + str(score) + " | Misses: " + str(misses + realMisses) + " | " + accuracyString + letterRating
 	
-	$HUD/HudElements/TopBar/Progress.value = MusicStream.get_playback_position()
-	$HUD/HudElements/TopBar/Progress.max_value = MusicStream.stream.get_length()
+	if (Settings.hudProgressBar):
+		$HUD/HudElements/TopBar/Progress.value = MusicStream.get_playback_position()
+		$HUD/HudElements/TopBar/Progress.max_value = MusicStream.stream.get_length()
+		$HUD/HudElements/TopBar/TopBarLabel.text = song.capitalize() + " | " + difficulty.to_upper() + " | " + Main.convert_to_time_string(MusicStream.stream.get_length() - MusicStream.get_playback_position())
 	
-	$HUD/HudElements/TopBar/TopBarLabel.text = song.capitalize() + " | " + difficulty.to_upper() + " | " + Main.convert_to_time_string(MusicStream.stream.get_length() - MusicStream.get_playback_position())
+	$HUD/HudElements/TopBar.visible = Settings.hudProgressBar
+	
 	$HUD/HudElements/BotplayLabel.visible = Settings.botPlay
 	
 	$HUD/HudElements/Background.color.a = Settings.backgroundOpacity
@@ -617,6 +624,8 @@ func get_letter_rating(accuracy):
 	if (realMisses == 0):
 		if (totalHitNotes == hitNotes):
 			prefix = " | MFC"
+		elif (isGFC):
+			prefix = " | GFC"
 		else:
 			prefix = " | FC"
 	

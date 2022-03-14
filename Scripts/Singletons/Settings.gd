@@ -9,6 +9,7 @@ var hudRatings = false # display ratings on the hud layer
 var hudRatingsOffset = Vector2(640, 360) # if its a hud rating, move it by this offset
 var hudRatingsMiss = false
 var backgroundOpacity = 0
+var hudProgressBar = true
 
 var fpsCap = 120
 

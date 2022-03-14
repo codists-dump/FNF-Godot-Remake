@@ -109,6 +109,9 @@ margin_right = 306.0
 margin_bottom = 172.0
 rect_scale = Vector2( 1.5, 1.5 )
 color = Color( 0, 0, 0, 0 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Ratings" type="Node2D" parent="HUD/HudElements"]
 

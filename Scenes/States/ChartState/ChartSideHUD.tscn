@@ -21,7 +21,6 @@ __meta__ = {
 }
 
 [node name="File" type="Control" parent="TabContainer"]
-visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_top = 22.0
@@ -107,6 +106,7 @@ __meta__ = {
 }
 
 [node name="Chart" type="Control" parent="TabContainer"]
+visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_top = 22.0
@@ -130,14 +130,33 @@ allow_greater = true
 allow_lesser = true
 prefix = "BPM"
 
+[node name="Section" type="Control" parent="TabContainer"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = 22.0
+mouse_filter = 1
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="SwapSection" type="Button" parent="TabContainer/Section"]
+margin_left = 16.0
+margin_top = 16.0
+margin_right = 130.0
+margin_bottom = 48.0
+focus_mode = 1
+mouse_filter = 1
+enabled_focus_mode = 1
+text = "Swap Section"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
 [node name="Script" type="Control" parent="TabContainer"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = 4.0
-margin_top = 32.0
-margin_right = -4.0
-margin_bottom = -4.0
+margin_top = 22.0
 mouse_filter = 1
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -168,3 +187,4 @@ __meta__ = {
 [connection signal="text_changed" from="TabContainer/File/SongNameEdit" to="." method="_on_SongNameEdit_text_changed"]
 [connection signal="item_selected" from="TabContainer/File/DifButton" to="." method="_on_DifButton_item_selected"]
 [connection signal="value_changed" from="TabContainer/Chart/VBoxContainer/BPMBox" to="." method="_on_BPMBox_value_changed"]
+[connection signal="pressed" from="TabContainer/Section/SwapSection" to="." method="_on_SwapSection_pressed"]

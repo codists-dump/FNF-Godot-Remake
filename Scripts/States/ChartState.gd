@@ -116,6 +116,7 @@ func _process(_delta):
 		
 		for note in unhitNotes:
 			if (note[0] <= MusicStream.get_playback_position() * 1000):
+				print("played")
 				var strum = $ChartStrumLine/LeftStrum/Buttons
 				var noteStr = "Left"
 				var noteNode
@@ -176,8 +177,6 @@ func load_song():
 func change_bpm():
 	crochet = (60 / songData["bpm"])
 	stepCrochet = (crochet / 4)
-	
-	print(stepCrochet)
 
 func rearrange_notes():
 	var allNotes = []
@@ -189,7 +188,9 @@ func rearrange_notes():
 	songData["notes"] = []
 	
 	var daSection = 0
+	var tempSectionsDict = {}
 	var tempSectionArray = []
+	
 	for note in allNotes:
 		var sectionIn = floor((note[0] / 1000) / (16 * stepCrochet))
 		
@@ -199,11 +200,32 @@ func rearrange_notes():
 					"sectionNotes": tempSectionArray,
 					"mustHitSection": false
 				}
-				songData["notes"].append(dict)
+				tempSectionsDict[str(sectionIn)] = dict
 			tempSectionArray = []
-		daSection = sectionIn
 		
+		daSection = sectionIn
+	
 		tempSectionArray.append(note)
+	
+	var lastSection = tempSectionsDict.keys().back()
+	print(lastSection)
+	
+	if (lastSection == null):
+		return
+	
+	for section in int(lastSection):
+		section = section + 1
+		
+		var defaultDict = {
+			"sectionNotes": [],
+			"mustHitSection": false
+		}
+		
+		var dict = tempSectionsDict.get(str(section), defaultDict)
+		
+		songData["notes"].append(dict)
+	
+	print(songData["notes"])
 	
 func load_music():
 	var songPath = songData["_dir"]
@@ -227,6 +249,8 @@ func update_info_text():
 	
 	infoText += "\n\nBEAT: " + str(curBeat)
 	infoText += "\nSTEP: " + str(curStep)
+	
+	infoText += str(MusicStream.get_playback_position())
 	
 	$HUD/InfoLabel.text = infoText
 
@@ -332,6 +356,16 @@ func load_song_script():
 	var file = Mods.mod_script(Mods.songsDir + "/" + song + "/script.gd")
 	if (file is Object):
 		songScript = file.new()
+
+func swap_section():
+	var sectionData = songData["notes"][curSection]
+	
+	for note in sectionData["sectionNotes"]:
+		if (note[1] >= 4):
+			note[1] -= 4
+		elif (note[1] < 4):
+			note[1] += 4
+		print(note)
 
 func _on_CreateEventPopup_event_created(step, eventName, eventColor, eventArgs):
 	add_event(curSection, step, eventName, eventColor, eventArgs)

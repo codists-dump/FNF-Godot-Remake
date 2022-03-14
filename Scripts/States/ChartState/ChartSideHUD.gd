@@ -167,7 +167,11 @@ func _on_SaveAsButton_pressed():
 func _on_NewButton_pressed():
 	new_chart()
 
+# Section
+func _on_SwapSection_pressed():
+	chartState.swap_section()
+
 # Chart
 func _on_BPMBox_value_changed(value):
-	chartState.change_bpm()
 	chartState.songData["bpm"] = value
+	chartState.change_bpm()

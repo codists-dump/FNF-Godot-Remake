@@ -28,7 +28,7 @@ func _process(_delta):
 	
 	if (Input.is_action_just_pressed("cancel")):
 		if (!inOptions):
-			get_tree().paused = false
+			resume()
 		elif (!$CanvasLayer/OptionsMenu/EditValue/ValueEdit.visible):
 			toggleOptions(false)
 	
@@ -37,7 +37,7 @@ func _process(_delta):
 func option_selected(selected):
 	match (selected):
 		0:
-			get_tree().paused = false
+			resume()
 		1:
 			playState.restart_playstate()
 		2:
@@ -70,3 +70,8 @@ func toggleOptions(enable):
 		
 		$CanvasLayer/PauseMenu/Options.enabled = true
 		$CanvasLayer/PauseMenu.visible = true
+
+func resume():
+	playState.setup_strums()
+	
+	get_tree().paused = false
