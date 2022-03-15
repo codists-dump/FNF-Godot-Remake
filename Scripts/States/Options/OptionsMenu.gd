@@ -23,6 +23,7 @@ var options = {
 		"HUD RATINGS OFFSET": ["hudRatingsOffset", "Changes the on-screen position of the HUD Ratings.", true],
 		"MISS RATINGS": ["hudRatingsMiss", "Adds a extra rating that displays how many times\nyou've missed consecutively.", true],
 			"NOTES": [null, "", false, "seperator"],
+		"NOTE QUANTS": ["noteQuants", "Changes note color based on song beat.", false],
 		"CUSTOM NOTE COLORS": ["customNoteColors", "Enables note color customization.", false],
 		"EDIT LEFT NOTE COLOR": ["noteColorLeft", "Changes the left arrows color.", false],
 		"EDIT DOWN NOTE COLOR": ["noteColorDown", "Changes the down arrows color.", false],

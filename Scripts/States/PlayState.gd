@@ -158,7 +158,7 @@ func player_input():
 	button_logic(PlayerStrum, Note.Up)
 	button_logic(PlayerStrum, Note.Right)
 
-func button_logic(line, note):
+func button_logic(line, note, actionOverride=null):
 	
 	# get the buttons name and action
 	var buttonName = "Left"
@@ -174,7 +174,11 @@ func button_logic(line, note):
 			buttonName = "Right"
 			action = "right"
 	
-	# get the nodes
+	if (actionOverride != null):
+		if (actionOverride is String):
+			action = actionOverride
+	
+	# get the nodesr
 	var button = line.get_node("Buttons/" + buttonName)
 	var animation = button.get_node("AnimationPlayer")
 	
@@ -413,20 +417,19 @@ func on_hit(must_hit, note_type, timing):
 			match note_type:
 				Note.Left:
 					anim = "Left"
-					color = Settings.noteColorLeft
 				Note.Down:
 					anim = "Down"
-					color = Settings.noteColorDown
 				Note.Up:
 					anim = "Up"
-					color = Settings.noteColorUp
 				Note.Right:
 					anim = "Right"
-					color = Settings.noteColorRight
 			
-			splash.position = PlayerStrum.position + PlayerStrum.get_node("Buttons/" + anim).position
+			var strumButton = PlayerStrum.get_node("Buttons/" + anim)
+			splash.position = PlayerStrum.position + strumButton.position
 			
-			if (Settings.customNoteColors):
+			color = strumButton.noteColor
+			
+			if (Settings.customNoteColors || Settings.noteQuants):
 				anim = "Desat"
 				splash.self_modulate = color
 				splash.get_node("Overlay").visible = true
@@ -706,9 +709,6 @@ func setup_strums():
 			EnemyStrum.scale = EnemyStrum.scale * 0.5
 		else:
 			EnemyStrum.visible = false
-	
-	for button in EnemyStrum.get_node("Buttons").get_children():
-		button.enemyStrum = true
 	
 	healthShakePos = $HUD/HudElements/HealthBar.rect_position
 

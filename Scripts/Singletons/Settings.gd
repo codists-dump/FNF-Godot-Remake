@@ -23,11 +23,12 @@ var offset = 0
 
 var freeplaySongPreview = true
 
+var noteQuants = false
 var customNoteColors = false
-var noteColorLeft = Color.red
-var noteColorDown = Color.blue
-var noteColorUp = Color.orange
-var noteColorRight = Color.yellow
+var noteColorLeft = Color.white
+var noteColorDown = Color.white
+var noteColorUp = Color.white
+var noteColorRight = Color.white
 
 func _ready():
 	load_settings()
@@ -81,13 +82,14 @@ func load_keybinds():
 	for action in file.get_section_keys("keybinds"):
 		var keys = InputMap.get_action_list(action)
 		
-		var scancode = file.get_value("keybinds", action, keys[keys.size()-1].scancode)
+		if (keys.size() != 0):
+			var scancode = file.get_value("keybinds", action, keys[keys.size()-1].scancode)
 
-		var key = InputEventKey.new()
-		key.set_scancode(scancode)
-		
-		InputMap.action_erase_event(action, keys[keys.size()-1])
-		InputMap.action_add_event(action, key)
+			var key = InputEventKey.new()
+			key.set_scancode(scancode)
+			
+			InputMap.action_erase_event(action, keys[keys.size()-1])
+			InputMap.action_add_event(action, key)
 
 func update_settings():
 	Engine.set_target_fps(fpsCap)

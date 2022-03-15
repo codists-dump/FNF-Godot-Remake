@@ -17,19 +17,16 @@ func _ready():
 		setup_colors()
 
 func setup_colors():
-	match note_type:
-		Note.Left:
-			noteColor = Settings.noteColorLeft
-		Note.Down:
-			noteColor = Settings.noteColorDown
-		Note.Up:
-			noteColor = Settings.noteColorUp
-		Note.Right:
-			noteColor = Settings.noteColorRight
-	
-	if (Settings.customNoteColors):
-		$Sprite.modulate = noteColor
-		$Sprite.texture = desatTexture
+	if (Settings.customNoteColors || Settings.noteQuants):
+		match note_type:
+			Note.Left:
+				noteColor = Settings.noteColorLeft
+			Note.Down:
+				noteColor = Settings.noteColorDown
+			Note.Up:
+				noteColor = Settings.noteColorUp
+			Note.Right:
+				noteColor = Settings.noteColorRight
 		
 		var overlay = Sprite.new()
 		overlay.texture = overlayTexture
@@ -37,6 +34,15 @@ func setup_colors():
 		overlay.hframes = $Sprite.hframes
 		overlay.name = "Overlay"
 		add_child(overlay, true)
+		
+		set_color()
+
+func set_color(color=noteColor):
+	if (Settings.customNoteColors || Settings.noteQuants):
+		noteColor = color
+		
+		$Sprite.modulate = color
+		$Sprite.texture = desatTexture
 
 func _process(_delta):
 	$Sprite.frame = animFrame + (note_type * 6)
@@ -44,6 +50,8 @@ func _process(_delta):
 	var overlay = get_node_or_null("Overlay")
 	if (overlay != null):
 		overlay.frame = $Sprite.frame
+		overlay.position = $Sprite.position
+		overlay.offset = $Sprite.offset
 
 func _on_AnimationPlayer_animation_finished(anim_name):
 	if (!enemyStrum && !Settings.botPlay):

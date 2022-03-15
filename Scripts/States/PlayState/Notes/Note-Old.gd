@@ -181,7 +181,6 @@ func _process(_delta):
 	if (held):
 		$Line2D.position.y = 0
 		
-		
 		var animPlayer = strum_lane.get_node("AnimationPlayer")
 		animPlayer.play("hit")
 		
