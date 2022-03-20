@@ -11,6 +11,7 @@ var strum_lane
 var strum_time
 var sustain_length = 0
 var must_hit = false
+var dir = 0
 
 var missed = false
 var playState

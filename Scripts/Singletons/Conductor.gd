@@ -89,8 +89,8 @@ func _process(delta):
 	var countdownMulti = ((countdown / (bpm / 60)) * 2)
 	songPositionMulti = MusicStream.get_playback_position() - countdownMulti
 	
-	crochet = (60 / bpm);
-	stepCrochet = crochet / 4;
+	crochet = (60 / bpm)
+	stepCrochet = crochet / 4
 	
 	update_step()
 

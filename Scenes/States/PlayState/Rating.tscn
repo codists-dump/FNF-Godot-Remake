@@ -1,7 +1,14 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://Scripts/States/PlayState/Rating.gd" type="Script" id=1]
 [ext_resource path="res://Assets/Sprites/UI/ratings_sheet.png" type="Texture" id=2]
+[ext_resource path="res://Assets/Other/Fonts/vcr.ttf" type="DynamicFontData" id=3]
+
+[sub_resource type="DynamicFont" id=1]
+size = 30
+outline_size = 6
+outline_color = Color( 0, 0, 0, 1 )
+font_data = ExtResource( 3 )
 
 [node name="Rating" type="Node2D"]
 script = ExtResource( 1 )
@@ -10,3 +17,14 @@ script = ExtResource( 1 )
 scale = Vector2( 0.7, 0.7 )
 texture = ExtResource( 2 )
 hframes = 5
+
+[node name="Label" type="Label" parent="Sprite"]
+margin_left = 62.8571
+margin_top = -84.2857
+margin_right = 116.857
+margin_bottom = -57.2857
+custom_fonts/font = SubResource( 1 )
+text = "0ms"
+__meta__ = {
+"_edit_use_anchors_": false
+}

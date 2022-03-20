@@ -53,6 +53,7 @@ func _ready():
 	playState.connect("event_activated", self, "_on_event")
 	playState.connect("note_hit", self, "_on_note_hit")
 	playState.connect("note_missed", self, "_on_note_missed")
+	playState.connect("note_created", self, "_on_note_created")
 
 func _process(_delta):
 	curStep = Conductor.curStep
@@ -77,6 +78,9 @@ func _on_note_hit(_rating, _must_hit, _note_type, _timing):
 	pass
 	
 func _on_note_missed():
+	pass
+
+func _on_note_created(_note):
 	pass
 
 # Tween a node's property from a start value to a end value.

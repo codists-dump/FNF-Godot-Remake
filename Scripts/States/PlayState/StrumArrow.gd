@@ -8,7 +8,9 @@ var enemyStrum = false
 
 var desatTexture = preload("res://Assets/Sprites/Notes/Desat_Strum_Sprites.png")
 var overlayTexture = preload("res://Assets/Sprites/Notes/Desat_Strum_Sprites_Overlay.png")
-var noteColor
+var noteColor = Color.white
+
+var customTexture = false
 
 var moveScale = 1
 
@@ -17,6 +19,9 @@ func _ready():
 		setup_colors()
 
 func setup_colors():
+	if (customTexture):
+		return
+	
 	if (Settings.customNoteColors || Settings.noteQuants):
 		match note_type:
 			Note.Left:
@@ -38,6 +43,9 @@ func setup_colors():
 		set_color()
 
 func set_color(color=noteColor):
+	if (customTexture):
+		return
+	
 	if (Settings.customNoteColors || Settings.noteQuants):
 		noteColor = color
 		

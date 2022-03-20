@@ -4,12 +4,15 @@ var vsp = -180
 var gravity = 450
 
 var combo = 0
+var offset = 0
 
 var numberTexture = preload("res://Assets/Sprites/UI/combo.png")
 var numberVsps = []
 
 func _ready():
 	create_numbers()
+	
+	$Sprite/Label.text = str(round(offset)) + "ms"
 
 func _process(delta):
 	$Sprite.position.y += vsp * delta

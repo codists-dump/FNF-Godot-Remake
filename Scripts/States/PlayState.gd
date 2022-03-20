@@ -4,6 +4,7 @@ signal event_activated(eventName, eventArgs)
 
 signal note_hit(rating, must_hit, note_type, timing)
 signal note_missed()
+signal note_created(note)
 
 # constants
 # hit timings and windows
@@ -158,7 +159,7 @@ func player_input():
 	button_logic(PlayerStrum, Note.Up)
 	button_logic(PlayerStrum, Note.Right)
 
-func button_logic(line, note, actionOverride=null):
+func button_logic(line, note, buttonOverride=null, actionOverride=null):
 	
 	# get the buttons name and action
 	var buttonName = "Left"
@@ -173,6 +174,10 @@ func button_logic(line, note, actionOverride=null):
 		Note.Right:
 			buttonName = "Right"
 			action = "right"
+	
+	if (buttonOverride != null):
+		if (buttonOverride is String):
+			buttonName = buttonOverride
 	
 	if (actionOverride != null):
 		if (actionOverride is String):
@@ -298,7 +303,9 @@ func get_event():
 		emit_signal("event_activated", event[1], event[3])
 		print(event[1], event[3])
 
-func spawn_note(dir, strum_time, sustain_length, arg3):
+func spawn_note(dir, strum_time, sustain_length, arg3=null):
+	var oldDir = dir
+	
 	if (dir > 7):
 		dir = 7
 	if (dir < 0):
@@ -349,13 +356,18 @@ func spawn_note(dir, strum_time, sustain_length, arg3):
 		note.strum_time = strum_time
 		note.sustain_length = sustain_length
 		note.note_type = dir
+		note.dir = oldDir
 		
 		if (strumLine == PlayerStrum):
 			note.must_hit = true
 		
-		strumLine.get_node("Notes").add_child(note)
+		emit_signal("note_created", note)
+		note.strum_lane.get_parent().get_parent().get_node("Notes").add_child(note)
 
-func on_hit(must_hit, note_type, timing):
+func on_hit(note, timing):
+	var must_hit = note.must_hit
+	var note_type = note.note_type
+	
 	var character = EnemyCharacter
 	if (must_hit):
 		character = PlayerCharacter
@@ -424,7 +436,7 @@ func on_hit(must_hit, note_type, timing):
 				Note.Right:
 					anim = "Right"
 			
-			var strumButton = PlayerStrum.get_node("Buttons/" + anim)
+			var strumButton = note.strum_lane
 			splash.position = PlayerStrum.position + strumButton.position
 			
 			color = strumButton.noteColor
@@ -440,7 +452,7 @@ func on_hit(must_hit, note_type, timing):
 			if (Settings.noteSplashes):
 				$HUD/HudElements.add_child(splash)
 		
-		create_rating(HIT_TIMINGS.keys().find(rating))
+		create_rating(HIT_TIMINGS.keys().find(rating), timing)
 		
 	emit_signal("note_hit", rating, must_hit, note_type, timing)
 		
@@ -473,7 +485,7 @@ func on_miss(must_hit, note_type, passed = false):
 	combo -= 1
 	
 	if (Settings.hudRatingsMiss):
-		create_rating(-1)
+		create_rating(-1, 0)
 	
 	shake_health()
 
@@ -712,10 +724,11 @@ func setup_strums():
 	
 	healthShakePos = $HUD/HudElements/HealthBar.rect_position
 
-func create_rating(rating):
+func create_rating(rating, timing):
 	var ratingObj = RATING_SCENE.instance()
 	ratingObj.get_node("Sprite").frame = rating+1
 	ratingObj.combo = combo
+	ratingObj.offset = timing
 	
 #	if (totalHitNotes == hitNotes):
 #		ratingObj.modulate = Color.gold

@@ -13,6 +13,8 @@ export var enabled = true
 
 export var useIcons = false
 export var optionIcons = []
+export var iconSize = Vector2(-1, -1)
+export var iconSelectionAnim = false
 
 export var canUseFinder = false
 
@@ -91,7 +93,19 @@ func draw_options():
 		if (useIcons):
 			if (len(optionIcons) >= idx):
 				if (optionIcons[idx] != null):
-					draw_texture(optionIcons[idx], position + posNew + Vector2(option.length()*55, -30))
+					var imageSize = Vector2(optionIcons[idx].get_width(), optionIcons[idx].get_height())
+					
+					var iconSizeTemp = iconSize
+					if (iconSizeTemp < Vector2.ZERO):
+						iconSizeTemp = imageSize
+					
+					var srcRect = Rect2(Vector2.ZERO, iconSizeTemp)
+					var rect = Rect2(position + posNew + Vector2((option.length()*50) + 20, -30), iconSizeTemp)
+					
+					if (iconSelectionAnim && selected == idx):
+						srcRect.position.x += iconSize.x
+					
+					draw_texture_rect_region(optionIcons[idx], rect, srcRect)
 		
 		idx += 1
 

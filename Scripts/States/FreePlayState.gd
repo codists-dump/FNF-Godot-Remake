@@ -55,6 +55,7 @@ func get_songs():
 	var songsMenu = $CanvasLayer/ChoiceMenu
 	songsMenu.optionOffset.y = 120
 	songsMenu.options = []
+	songsMenu.optionIcons = []
 	
 	get_freeplay_songs("res://Assets/Songs/")
 	
@@ -118,6 +119,7 @@ func song_selected(option):
 	
 	if (character2 != null):
 		character2.queue_free()
+	
 	character2 = Main.create_character(player2)
 	character2.setup_character()
 	$CanvasLayer/Icons/Enemy.texture = character2.iconSheet
@@ -136,14 +138,33 @@ func get_freeplay_songs(directory):
 	var dir = Directory.new()
 	dir.open(directory)
 	
-	dir.list_dir_begin()
+	dir.list_dir_begin(true)
 	while true:
 		var file = dir.get_next()
 		if file == "":
 			break
 		elif not file.begins_with("."):
-			songsMenu.options.append(file)
 			loadedJsons[file] = Conductor.load_song_json(file)
+			
+			var songData = loadedJsons[file]
+			
+			if (songData == null):
+				continue
+			
+			songsMenu.options.append(file)
+			
+			var player2 = "test"
+			if (songData.has("player2") && Main.CHARACTERS.has(songData["player2"])):
+				player2 = songData["player2"]
+			
+			if (character2 != null):
+				character2.queue_free()
+
+			character2 = Main.create_character(player2)
+			character2.setup_character()
+			
+			var textureIcon = character2.iconSheet
+			songsMenu.optionIcons.append(character2.iconSheet)
 			
 			if (Settings.freeplaySongPreview):
 				var newDir = directory + "/" + file + "/Inst.ogg"

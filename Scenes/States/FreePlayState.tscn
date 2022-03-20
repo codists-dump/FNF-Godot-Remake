@@ -23,6 +23,9 @@ __meta__ = {
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
 [node name="ChoiceMenu" parent="CanvasLayer" instance=ExtResource( 1 )]
+useIcons = true
+iconSize = Vector2( 150, 150 )
+iconSelectionAnim = true
 canUseFinder = true
 
 [node name="SettingsBox" type="ColorRect" parent="CanvasLayer"]
@@ -62,6 +65,7 @@ __meta__ = {
 }
 
 [node name="InfoBox" type="ColorRect" parent="CanvasLayer"]
+visible = false
 margin_left = 911.0
 margin_top = 100.0
 margin_right = 1268.0
@@ -112,6 +116,7 @@ __meta__ = {
 }
 
 [node name="Icons" type="Node2D" parent="CanvasLayer"]
+visible = false
 position = Vector2( 1172, 488 )
 scale = Vector2( 1.4, 1.4 )
 

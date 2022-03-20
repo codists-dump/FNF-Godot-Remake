@@ -11,6 +11,7 @@ var strum_lane
 var strum_time
 var sustain_length = 0
 var must_hit = false
+var dir = 0
 
 var missed = false
 var playState
@@ -69,7 +70,9 @@ func _ready():
 	sustain_length = sustain_length / Conductor.song_speed
 	holdNote = sustain_length > 0
 	
-	$Sprite.frame = note_type
+	if (note_type <= $Sprite.vframes * $Sprite.hframes):
+		$Sprite.frame = note_type
+	
 	setup_note_colors()
 	$Line2D.texture = holdArray[0]
 
@@ -82,7 +85,7 @@ func _process(_delta):
 		if (prevSongPos != Conductor.songPositionMulti):
 			realSongPos = Conductor.songPositionMulti
 		else:
-			realSongPos += _delta
+			realSongPos += _delta * Conductor.song_speed
 		
 		prevSongPos = Conductor.songPositionMulti
 		
@@ -108,7 +111,7 @@ func _process(_delta):
 				queue_free()
 	else: # if the note is being held
 		# subtract from sustain time
-		sustain_length -= _delta * Conductor.song_speed
+		sustain_length -= _delta
 		
 		# if completed die
 		if (sustain_length <= 0):
@@ -137,12 +140,12 @@ func _process(_delta):
 		character.idleTimer = 0.2
 		
 		var animName = playState.player_sprite(note_type, "")
-		if (character.get_node("AnimationPlayer").get_current_animation_position() >= 0.18):
+		if (character.get_node("AnimationPlayer").get_current_animation_position() >= 0.03):
 			character.play(animName)
 	
 	if (holdNote):
 		# awesome hold note math magic by Scarlett
-		var lineY = (sustain_length * (SCROLL_DISTANCE * Conductor.scroll_speed * Conductor.scroll_speed / SCROLL_TIME) * moveScale) - holdSprs[key][1].get_height()
+		var lineY = (sustain_length * (SCROLL_DISTANCE * Conductor.scroll_speed * Conductor.scroll_speed / SCROLL_TIME) * Conductor.song_speed) * moveScale
 		if (abs(lineY) <= 0):
 			lineY = 0
 		
@@ -178,7 +181,7 @@ func note_hit(timing):
 	strum_lane.set_color(noteColor)
 	
 	if (!wasHit):
-		playState.on_hit(must_hit, note_type, timing)
+		playState.on_hit(self, timing)
 	
 	wasHit = true
 	

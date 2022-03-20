@@ -250,8 +250,6 @@ func update_info_text():
 	infoText += "\n\nBEAT: " + str(curBeat)
 	infoText += "\nSTEP: " + str(curStep)
 	
-	infoText += str(MusicStream.get_playback_position())
-	
 	$HUD/InfoLabel.text = infoText
 
 func change_section(change):
