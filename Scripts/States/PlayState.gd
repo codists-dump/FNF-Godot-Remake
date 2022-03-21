@@ -9,7 +9,7 @@ signal note_created(note)
 # constants
 # hit timings and windows
 # {rating name: [min ms, score]}
-const HIT_TIMINGS = {"shit": [180, 50, 0.25], "bad": [135, 100, 0.50], "good": [102, 200, 0.75], "sick": [55, 350, 1]}
+const HIT_TIMINGS = {"shit": [140, 50, 0.25], "bad": [120, 100, 0.50], "good": [100, 200, 0.75], "sick": [50, 350, 1]}
 
 # preloading nodes
 const PAUSE_SCREEN = preload("res://Scenes/States/PlayState/PauseMenu.tscn")
@@ -115,8 +115,6 @@ func _ready():
 	connect("event_activated", self, "on_event")
 	
 func _process(_delta):
-	player_input() # handle the players input
-	
 	spawn_notes() # create the needed notes
 	get_section() # get the current section
 	get_event()
@@ -142,6 +140,8 @@ func _process(_delta):
 	$HUD/HudElements.scale = lerp($HUD/HudElements.scale, Vector2(1,1), _delta * 5)
 
 func _input(event):
+	player_input() # handle the players input
+	
 	# debug shit
 	if (event is InputEventKey):
 		if (event.pressed):
