@@ -97,14 +97,18 @@ func _process(delta):
 func _exit_tree():
 	noteThread.wait_to_finish()
 
-func play_song(song, newerBpm, speed = 1):
+func play_song(song, newerBpm, speed = 1, force=true):
+	if (song is String):
+		song = load(song)
+		
+	if (!force):
+		if (MusicStream.stream == song && song_speed == speed):
+			return
+		
+	MusicStream.stream = song
+	
 	song_speed = speed
 	change_bpm(newerBpm)
-	
-	if (song is Object):
-		MusicStream.stream = song
-	else:
-		MusicStream.stream = load(song)
 		
 	MusicStream.pitch_scale = song_speed
 	MusicStream.play()
@@ -394,9 +398,6 @@ func load_song_json(song, difExt="", path=null):
 func save_score(songName, score, dif=1):
 	var file = ConfigFile.new()
 	var err = file.load("user://data.ini")
-	
-	if err != OK:
-		return 0
 	
 	var scoreArray = file.get_value("SCORES", songName, [0, 0, 0])
 	

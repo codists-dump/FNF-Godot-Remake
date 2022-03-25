@@ -258,5 +258,3 @@ smoothing_enabled = true
 [node name="Ratings" type="Node" parent="."]
 
 [node name="MobilePlayStateControls" parent="." instance=ExtResource( 9 )]
-
-[node name="Timer" type="Timer" parent="."]

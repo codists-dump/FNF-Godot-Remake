@@ -8,6 +8,11 @@ func _ready():
 func move_option():
 	if (menu.waitTime <= 0):
 		.move_option()
+	
+	var data = menu.options[menu.pageName][menu.options[menu.pageName].keys()[selected]]
+	if (len(data) >= 4):
+		if (data[3] == "seperator"):
+			move_option()
 
 func draw_options():
 	var idx = 0

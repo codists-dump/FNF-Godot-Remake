@@ -602,22 +602,10 @@ func health_bar_process(delta):
 		Conductor.VocalStream.stop()
 		
 		var gameoverScene = GAME_OVER.instance()
-		var offset = Vector2(-30, -120)
-		gameoverScene.get_node("DeathSprite").position = PlayerCharacter.position + offset
+		gameoverScene.get_node("DeathSprite").position = PlayerCharacter.position + PlayerCharacter.get_node("Sprite").position
 		
 		gameoverScene.get_node("Camera2D").position = $Camera.position
 		gameoverScene.get_node("Camera2D").zoom = $Camera.zoom
-		
-		var rankText = "RANK " + get_letter_rating(accuracy)
-		var scoreText = "\n\nSCORE: " + str(score)
-		var missText = "\nMISSES: " + str(realMisses) + "/" + str(totalHitNotes + realMisses)
-		var accText = "\nACCURACY: " + str(accuracyString)
-		
-		var nutsText = "\n\nCause of death: " + str(song)
-	
-		var gameOverText = rankText + scoreText + missText + accText + nutsText
-		
-		gameoverScene.get_node("CanvasLayer/Label").text = gameOverText
 		
 		if (storyMode):
 			storySongs.push_front("lose")
@@ -645,7 +633,7 @@ func get_letter_rating(accuracy):
 	
 	if (realMisses == 0):
 		if (totalHitNotes == hitNotes):
-			prefix = " | MFC"
+			prefix = " | SFC"
 		elif (isGFC):
 			prefix = " | GFC"
 		else:
