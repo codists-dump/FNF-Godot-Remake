@@ -16,6 +16,8 @@ var character2
 var loadedJsons = {}
 var loadedSongs = {}
 
+var simpleFreeplay = true
+
 func _ready():
 	get_songs()
 	
@@ -38,7 +40,7 @@ func _process(_delta):
 		
 	selectedDifficulty = clamp(selectedDifficulty, 0, Main.difficultys.size()-1)
 		
-	if ($CanvasLayer/ChoiceMenu.selected != lastSelected):
+	if ($CanvasLayer/ChoiceMenu.selected != lastSelected || move != 0):
 		song_selected($CanvasLayer/ChoiceMenu.selected)
 		
 	lastSelected = $CanvasLayer/ChoiceMenu.selected
@@ -99,32 +101,33 @@ func song_selected(option):
 	
 	if (loadedSongs.has(songName)):
 		Conductor.play_song(loadedSongs[songName], songData["bpm"])
+
+	scoreSelect = Conductor.load_score(songName, selectedDifficulty)
+	
+	if (!simpleFreeplay):
+		var player1 = "test"
+		var player2 = "test"
 		
-	scoreSelect = Conductor.load_score(songName)
-	
-	var player1 = "test"
-	var player2 = "test"
-	
-	if (songData.has("player1") && Main.CHARACTERS.has(songData["player1"])):
-		player1 = songData["player1"]
-	if (songData.has("player2") && Main.CHARACTERS.has(songData["player2"])):
-		player2 = songData["player2"]
-	
-	if (character1 != null):
-		character1.queue_free()
-	
-	character1 = Main.create_character(player1)
-	character1.setup_character()
-	$CanvasLayer/Icons/Player.texture = character1.iconSheet
-	
-	if (character2 != null):
-		character2.queue_free()
-	
-	character2 = Main.create_character(player2)
-	character2.setup_character()
-	$CanvasLayer/Icons/Enemy.texture = character2.iconSheet
-	
-	setup_song_info()
+		if (songData.has("player1") && Main.CHARACTERS.has(songData["player1"])):
+			player1 = songData["player1"]
+		if (songData.has("player2") && Main.CHARACTERS.has(songData["player2"])):
+			player2 = songData["player2"]
+		
+		if (character1 != null):
+			character1.queue_free()
+		
+		character1 = Main.create_character(player1)
+		character1.setup_character()
+		$CanvasLayer/Icons/Player.texture = character1.iconSheet
+		
+		if (character2 != null):
+			character2.queue_free()
+		
+		character2 = Main.create_character(player2)
+		character2.setup_character()
+		$CanvasLayer/Icons/Enemy.texture = character2.iconSheet
+		
+		setup_song_info()
 
 func song_chosen(option):
 	var songName = $CanvasLayer/ChoiceMenu.options[option]

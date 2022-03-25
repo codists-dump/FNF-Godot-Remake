@@ -156,14 +156,14 @@ func change_other():
 			popup.add_child(colorPicker, true)
 			
 			var image = Sprite.new()
-			image.texture = load("res://Assets/Sprites/Notes/Desat_Note_Sprites.png")
+			image.texture = Main.get_note_sprite("noteDesat")
 			image.name = "NoteSprite"
 			image.vframes = 4
 			image.position = Vector2(-100, 200)
 			popup.add_child(image, true)
 			
 			var overlay = Sprite.new()
-			overlay.texture = load("res://Assets/Sprites/Notes/Desat_Note_Sprites_Overlay.png")
+			overlay.texture = Main.get_note_sprite("noteDesatOverlay")
 			overlay.vframes = image.vframes
 			overlay.position = image.position
 			popup.add_child(overlay, true)

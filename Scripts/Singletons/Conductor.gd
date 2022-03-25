@@ -391,20 +391,29 @@ func load_song_json(song, difExt="", path=null):
 	
 	return json
 
-func save_score(songName, score):
-	var file = ConfigFile.new()
-	file.set_value("SCORES", songName, score)
-	file.save("user://data.ini")
-
-func load_score(songName):
+func save_score(songName, score, dif=1):
 	var file = ConfigFile.new()
 	var err = file.load("user://data.ini")
 	
 	if err != OK:
 		return 0
 	
-	var score = file.get_value("SCORES", songName, 0)
-	return score
+	var scoreArray = file.get_value("SCORES", songName, [0, 0, 0])
+	
+	scoreArray[dif] = score
+	file.set_value("SCORES", songName, scoreArray)
+	
+	file.save("user://data.ini")
+
+func load_score(songName, dif=1):
+	var file = ConfigFile.new()
+	var err = file.load("user://data.ini")
+	
+	if err != OK:
+		return 0
+	
+	var score = file.get_value("SCORES", songName, [0, 0, 0])
+	return score[dif]
 
 func update_step():
 	curStep = floor(songPositionMulti / stepCrochet);

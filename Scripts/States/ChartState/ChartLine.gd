@@ -8,9 +8,9 @@ var squareSize = Vector2(42, 42)
 
 var noteTypes = {
 	# TEXTURE, FRAME DIMENSIONS, SIZE
-	"": [preload("res://Assets/Sprites/Notes/Note_Sprites.png"), Vector2(250, 250), Vector2(28, 28), true],
-	"mine": [preload("res://Assets/Sprites/Notes/Mine.png"), Vector2(133, 128), Vector2(0.5, 0.5), false],
-	"warn": [preload("res://Assets/Sprites/Notes/Warning.png"), Vector2(200, 200), Vector2(0.5, 0.5), false],
+	"": [Main.get_note_sprite("note"), Vector2(250, 250), Vector2(28, 28), true],
+	"mine": [Main.get_note_sprite("noteDesat"), Vector2(133, 128), Vector2(0.5, 0.5), false],
+	"warn": [Main.get_note_sprite("noteDesat"), Vector2(200, 200), Vector2(0.5, 0.5), false],
 }
 
 var lineY = 0

@@ -30,6 +30,8 @@ var noteColorDown = Color.white
 var noteColorUp = Color.white
 var noteColorRight = Color.white
 
+var noteSkin = "Default"
+
 func _ready():
 	load_settings()
 	update_settings()

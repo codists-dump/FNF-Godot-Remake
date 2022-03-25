@@ -58,9 +58,9 @@ config/icon="res://icon.png"
 
 Conductor="*res://Scripts/Singletons/Conductor.gd"
 Debug="*res://Scripts/Singletons/Debug.gd"
-Main="*res://Scripts/Singletons/Main.gd"
 Settings="*res://Scripts/Singletons/Settings.gd"
 Mods="*res://Scripts/Singletons/Mods.gd"
+Main="*res://Scripts/Singletons/Main.gd"
 
 [display]
 
@@ -147,5 +147,6 @@ common/enable_pause_aware_picking=true
 
 [rendering]
 
+quality/driver/driver_name="GLES2"
 vram_compression/import_etc=true
 environment/default_environment="res://default_env.tres"

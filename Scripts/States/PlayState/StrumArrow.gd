@@ -6,8 +6,8 @@ export (Note) var note_type = Note.Left
 export (int) var animFrame = 0
 var enemyStrum = false
 
-var desatTexture = preload("res://Assets/Sprites/Notes/Desat_Strum_Sprites.png")
-var overlayTexture = preload("res://Assets/Sprites/Notes/Desat_Strum_Sprites_Overlay.png")
+var desatTexture = Main.get_note_sprite("strumDesat")
+var overlayTexture = Main.get_note_sprite("strumDesatOverlay")
 var noteColor = Color.white
 
 var customTexture = false
@@ -15,6 +15,8 @@ var customTexture = false
 var moveScale = 1
 
 func _ready():
+	$Sprite.texture = Main.get_note_sprite("strum")
+	
 	if not Engine.editor_hint:
 		setup_colors()
 

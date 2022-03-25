@@ -9,7 +9,8 @@ signal note_created(note)
 # constants
 # hit timings and windows
 # {rating name: [min ms, score]}
-const HIT_TIMINGS = {"shit": [140, 50, 0.25], "bad": [120, 100, 0.50], "good": [100, 200, 0.75], "sick": [50, 350, 1]}
+const HIT_TIMINGS = {"shit": [120, 50, 0.25], "bad": [100, 100, 0.50], "good": [80, 200, 0.75], "sick": [55, 350, 1]}
+#const HIT_TIMINGS = {"shit": [140, 50, 0.25], "bad": [120, 100, 0.50], "good": [100, 200, 0.75], "sick": [80, 350, 1]}
 
 # preloading nodes
 const PAUSE_SCREEN = preload("res://Scenes/States/PlayState/PauseMenu.tscn")
@@ -90,6 +91,9 @@ var cameraTimer = -1
 # old vars
 var oldHealth = health
 
+# skinning?
+
+
 func _ready():
 	# get the strums nodes
 	PlayerStrum = get_node(PlayerStrumPath)
@@ -115,6 +119,8 @@ func _ready():
 	connect("event_activated", self, "on_event")
 	
 func _process(_delta):
+	player_input() # handle the players input
+	
 	spawn_notes() # create the needed notes
 	get_section() # get the current section
 	get_event()
@@ -140,8 +146,6 @@ func _process(_delta):
 	$HUD/HudElements.scale = lerp($HUD/HudElements.scale, Vector2(1,1), _delta * 5)
 
 func _input(event):
-	player_input() # handle the players input
-	
 	# debug shit
 	if (event is InputEventKey):
 		if (event.pressed):
@@ -367,7 +371,7 @@ func spawn_note(dir, strum_time, sustain_length, arg3=null):
 func on_hit(note, timing):
 	var must_hit = note.must_hit
 	var note_type = note.note_type
-	
+
 	var character = EnemyCharacter
 	if (must_hit):
 		character = PlayerCharacter
@@ -615,7 +619,10 @@ func health_bar_process(delta):
 		
 		gameoverScene.get_node("CanvasLayer/Label").text = gameOverText
 		
-		storySongs.push_front("lose")
+		if (storyMode):
+			storySongs.push_front("lose")
+		else:
+			storySongs = null
 		
 		gameoverScene.song = song
 		gameoverScene.difficulty = difficulty
@@ -742,7 +749,11 @@ func create_rating(rating, timing):
 		$HUD/HudElements/Ratings.add_child(ratingObj)
 
 func restart_playstate():
-	storySongs.push_front("awesome")
+	if (storyMode):
+		storySongs.push_front("awesome")
+	else:
+		storySongs = null
+	
 	Main.change_playstate(song, difficulty, speed, storySongs, true, null, chartingMode)
 
 func song_finished_check():
@@ -752,8 +763,15 @@ func song_finished_check():
 	if (MusicStream.get_playback_position() >= MusicStream.stream.get_length()):
 		finished = true
 		
-		if (len(storySongs) == 0):
-			Conductor.save_score(Conductor.songName, score)
+		if (len(storySongs) == 0 || !storyMode):
+			var difNumber = 0
+			match (difficulty):
+				"normal":
+					difNumber = 1
+				"hard":
+					difNumber = 2
+			
+			Conductor.save_score(Conductor.songName, score, difNumber)
 			
 			var menuSong = load("res://Assets/Music/freakyMenu.ogg")
 			if (Conductor.MusicStream.stream != menuSong):

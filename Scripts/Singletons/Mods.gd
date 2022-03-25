@@ -105,8 +105,6 @@ func add_by_prefix(animationPlayer, dir, name, xmlName, offset=[0,0], step=0.05,
 	
 	var parser = XMLParser.new()
 
-	print(dir + ".xml")
-
 	var errorCode = parser.open(dir + ".xml")
 	if errorCode != OK:
 		return
@@ -126,7 +124,8 @@ func add_by_prefix(animationPlayer, dir, name, xmlName, offset=[0,0], step=0.05,
 			for i in range(parser.get_attribute_count()):
 				match (parser.get_attribute_name(i)):
 					"name":
-						if (!parser.get_attribute_value(i).begins_with(xmlName)):
+						var newName = parser.get_attribute_value(i).left(len(parser.get_attribute_value(i)) - 4)
+						if (str(newName) != xmlName):
 							continue
 						nName = parser.get_attribute_value(i)
 					"x":

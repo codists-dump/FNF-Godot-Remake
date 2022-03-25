@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=2]
 
-[ext_resource path="res://Assets/Sprites/Notes/Note_Sprites.png" type="Texture" id=1]
-[ext_resource path="res://Assets/Sprites/Notes/Holds/left_line.png" type="Texture" id=2]
+[ext_resource path="res://Assets/Sprites/Notes/Default/Note_Sprites.png" type="Texture" id=1]
+[ext_resource path="res://Assets/Sprites/Notes/Default/Holds/left_line.png" type="Texture" id=2]
 [ext_resource path="res://Scripts/States/PlayState/Notes/Note.gd" type="Script" id=3]
 
 [node name="Note" type="Node2D"]

@@ -32,15 +32,15 @@ var noteColor
 var key = "left"
 
 var holdSprs = {
-	"left": [preload("res://Assets/Sprites/Notes/Holds/left_line.png"), preload("res://Assets/Sprites/Notes/Holds/left_end.png")],
-	"down": [preload("res://Assets/Sprites/Notes/Holds/down_line.png"), preload("res://Assets/Sprites/Notes/Holds/down_end.png")],
-	"up": [preload("res://Assets/Sprites/Notes/Holds/up_line.png"), preload("res://Assets/Sprites/Notes/Holds/up_end.png")],
-	"right": [preload("res://Assets/Sprites/Notes/Holds/right_line.png"), preload("res://Assets/Sprites/Notes/Holds/right_end.png")]
+	"left": Main.get_note_sprite("holdLeft"),
+	"down": Main.get_note_sprite("holdDown"),
+	"up": Main.get_note_sprite("holdUp"),
+	"right": Main.get_note_sprite("holdRight")
 }
 
-var desatNoteTexture = preload("res://Assets/Sprites/Notes/Desat_Note_Sprites.png")
-var noteOverlayTexture = preload("res://Assets/Sprites/Notes/Desat_Note_Sprites_Overlay.png")
-var desatHolds = [preload("res://Assets/Sprites/Notes/Holds/desat_line.png"), preload("res://Assets/Sprites/Notes/Holds/desat_end.png")]
+var desatNoteTexture = Main.get_note_sprite("noteDesat")
+var noteOverlayTexture = Main.get_note_sprite("noteDesatOverlay")
+var desatHolds = Main.get_note_sprite("holdDesat")
 
 var quantColors = [Color.red, Color.blue, Color.purple, Color.yellow, Color.pink, Color.orange, Color.cyan, Color.green, Color.gray]
 
@@ -51,6 +51,8 @@ var realSongPos = 0
 
 func _ready():
 	playState = get_tree().current_scene.current_scene
+	
+	$Sprite.texture = Main.get_note_sprite("note")
 	
 	match note_type:
 		Note.Left:
@@ -100,7 +102,7 @@ func _process(_delta):
 		if (!missed):
 			if (!must_hit || Settings.botPlay):
 				if (toStrumTime <= 0):
-					note_hit(toStrumTime)
+					note_hit(toStrumTime * 1000)
 				
 			if (toStrumTime * 1000 < -worstTiming):
 				note_miss(true)
@@ -145,7 +147,7 @@ func _process(_delta):
 	
 	if (holdNote):
 		# awesome hold note math magic by Scarlett
-		var lineY = (sustain_length * (SCROLL_DISTANCE * Conductor.scroll_speed * Conductor.scroll_speed / SCROLL_TIME) * Conductor.song_speed) * moveScale
+		var lineY = ((sustain_length * (SCROLL_DISTANCE * Conductor.scroll_speed * Conductor.scroll_speed / SCROLL_TIME) * Conductor.song_speed) - holdArray[1].get_height()) * moveScale
 		if (abs(lineY) <= 0):
 			lineY = 0
 		

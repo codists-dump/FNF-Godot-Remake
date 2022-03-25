@@ -1,0 +1,77 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://Scripts/Objects/Character.gd" type="Script" id=1]
+[ext_resource path="res://Assets/Sprites/Characters/gf-pixel_sheet.png" type="Texture" id=2]
+[ext_resource path="res://Assets/Sprites/Characters/Icons/icon-gf.png" type="Texture" id=3]
+
+[sub_resource type="Animation" id=3]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 3 ]
+}
+
+[sub_resource type="Animation" id=1]
+resource_name = "danceLEFT"
+step = 0.05
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.1, 0.2, 0.35 ),
+"transitions": PoolRealArray( 1, 1, 1, 1 ),
+"update": 0,
+"values": [ 0, 1, 2, 3 ]
+}
+
+[sub_resource type="Animation" id=2]
+resource_name = "danceRIGHT"
+step = 0.05
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.1, 0.25 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ 4, 5, 6 ]
+}
+
+[node name="Girlfriend" type="Node2D"]
+scale = Vector2( 6, 6 )
+script = ExtResource( 1 )
+spriteScale = Vector2( 6, 6 )
+idleDance = true
+idleDanceSpeed = true
+camOffset = Vector2( 0, -300 )
+girlfriendPosition = true
+iconSheet = ExtResource( 3 )
+characterColor = Color( 0.647059, 0, 0.301961, 1 )
+
+[node name="Sprite" type="Sprite" parent="."]
+position = Vector2( 5.33333, -46.6667 )
+texture = ExtResource( 2 )
+hframes = 7
+frame = 3
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+autoplay = "danceLEFT"
+anims/RESET = SubResource( 3 )
+anims/danceLEFT = SubResource( 1 )
+anims/danceRIGHT = SubResource( 2 )
+
+[connection signal="animation_finished" from="AnimationPlayer" to="." method="_on_AnimationPlayer_animation_finished"]
