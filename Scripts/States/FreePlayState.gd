@@ -184,6 +184,9 @@ func get_freeplay_songs(directory):
 		if file == "":
 			break
 		elif not file.begins_with("."):
+			if (choiceMenu.options.has(file)):
+				return
+				
 			loadedJsons[file] = Conductor.load_song_json(file)
 			
 			var songData = loadedJsons[file]
