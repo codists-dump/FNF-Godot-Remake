@@ -23,6 +23,7 @@ var held = false
 var holdHealth = 0.05
 
 var hasArrowFrames = true
+var customTexture = false
 
 onready var holdWindow = ((60 / Conductor.bpm) / 4)
 var changingTweenScale = false
@@ -49,10 +50,15 @@ var holdArray
 var prevSongPos = 0
 var realSongPos = 0
 
+var lastHoldTime = 0
+
+var move = true
+
 func _ready():
 	playState = get_tree().current_scene.current_scene
 	
-	$Sprite.texture = Main.get_note_sprite("note")
+	if (!customTexture):
+		$Sprite.texture = Main.get_note_sprite("note")
 	
 	match note_type:
 		Note.Left:
@@ -83,17 +89,25 @@ func _process(_delta):
 	
 	# if the note is not being held or just isnt a hold note
 	if (!held):
-		# set the notes position
-		if (prevSongPos != Conductor.songPositionMulti):
-			realSongPos = Conductor.songPositionMulti
-		else:
-			realSongPos += _delta * Conductor.song_speed
+		var time = Conductor.songPositionMulti + AudioServer.get_time_since_last_mix() - AudioServer.get_output_latency()
 		
-		prevSongPos = Conductor.songPositionMulti
+		if (time > 0):
+			# set the notes position
+			if (prevSongPos < time):
+				realSongPos = time
+			else:
+				realSongPos += _delta * Conductor.song_speed
+		else:
+			realSongPos = time
+		
+		prevSongPos = time
 		
 		var toStrumTime = (strum_time - realSongPos)
+		lastHoldTime = toStrumTime
 		
-		position.y = ((toStrumTime * moveScale) * 1000) * (Conductor.scroll_speed) + strum_lane.position.y
+		if (move):
+			position.y = ((toStrumTime * moveScale) * 1000) * (Conductor.scroll_speed) + strum_lane.position.y
+		
 		position.x = strum_lane.position.x
 		
 		var worstTiming = playState.HIT_TIMINGS[playState.HIT_TIMINGS.keys()[0]][0]
@@ -110,7 +124,11 @@ func _process(_delta):
 			modulate.a = 0.5
 			
 			if (toStrumTime * 1000 < -worstTiming * 2):
-				queue_free()
+				move = false
+				if (sustain_length > 0):
+					sustain_length -= _delta
+				else:
+					queue_free()
 	else: # if the note is being held
 		# subtract from sustain time
 		sustain_length -= _delta
@@ -132,7 +150,7 @@ func _process(_delta):
 				
 				held = false
 				strum_lane.get_node("AnimationPlayer").play("idle")
-				strum_time = Conductor.songPositionMulti
+				strum_time = Conductor.songPositionMulti + lastHoldTime
 		
 		# do character hold anim
 		var character = playState.EnemyCharacter
@@ -147,7 +165,7 @@ func _process(_delta):
 	
 	if (holdNote):
 		# awesome hold note math magic by Scarlett
-		var lineY = ((sustain_length * (SCROLL_DISTANCE * Conductor.scroll_speed * Conductor.scroll_speed / SCROLL_TIME) * Conductor.song_speed) - holdArray[1].get_height()) * moveScale
+		var lineY = ((sustain_length * (SCROLL_DISTANCE * Conductor.scroll_speed * Conductor.scroll_speed / SCROLL_TIME) * Conductor.song_speed)) * moveScale
 		if (abs(lineY) <= 0):
 			lineY = 0
 		

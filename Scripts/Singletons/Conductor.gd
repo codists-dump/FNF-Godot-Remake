@@ -116,6 +116,8 @@ func play_song(song, newerBpm, speed = 1, force=true):
 	VocalStream.stop()
 	
 	useCountdown = false
+	
+	muteVocals = false
 
 func play_chart(song, difficulty, speed = 1):
 	songName = song
@@ -172,6 +174,8 @@ func play_chart(song, difficulty, speed = 1):
 	var countDownOffset = 0
 	if (countDownOffset < 0):
 		countdown -= countDownOffset
+		
+	muteVocals = false
 
 func change_bpm(newBpm):
 	bpm = float(newBpm)
