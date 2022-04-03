@@ -6,7 +6,8 @@ const VOLUME_HUD = preload("res://Scenes/Other/VolumeHud.tscn")
 
 var STAGES = {
 	"stage": preload("res://Scenes/Stages/Stage.tscn"),
-	"halloween": preload("res://Scenes/Stages/Spooky.tscn")
+	"halloween": preload("res://Scenes/Stages/Spooky.tscn"),
+	"pixel": preload("res://Scenes/Stages/Pixel.tscn"),
 }
 
 var CHARACTERS = {
@@ -205,6 +206,7 @@ func load_note_sprites(skin="Default", dir=null):
 	}
 	
 	noteSprites[skin] = noteFiles
+	curNoteSkin = skin
 
 func get_note_sprite(asset, skin=curNoteSkin):
 	return noteSprites[skin][asset]

@@ -1,0 +1,114 @@
+[gd_scene load_steps=11 format=2]
+
+[ext_resource path="res://Scenes/States/PlayState.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Assets/Sprites/Stages/Pixel/weebSky.png" type="Texture" id=2]
+[ext_resource path="res://Assets/Sprites/Stages/Pixel/weebSchool.png" type="Texture" id=3]
+[ext_resource path="res://Assets/Sprites/Stages/Pixel/weebStreet.png" type="Texture" id=4]
+[ext_resource path="res://Assets/Sprites/Stages/Pixel/weebTrees.png" type="Texture" id=5]
+[ext_resource path="res://Scripts/Stages/Pixel.gd" type="Script" id=6]
+[ext_resource path="res://Assets/Sprites/Stages/Pixel/bgFreaks.png" type="Texture" id=7]
+
+[sub_resource type="Animation" id=1]
+resource_name = "Down"
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.2, 0.4 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 1,
+"values": [ 0, 1, 2 ]
+}
+
+[sub_resource type="Animation" id=2]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 0 ]
+}
+
+[sub_resource type="Animation" id=3]
+resource_name = "Up"
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.2 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 3, 4 ]
+}
+
+[node name="Stage" instance=ExtResource( 1 )]
+script = ExtResource( 6 )
+GFCharacter = "gf-pixel"
+noteSkin = "Pixel"
+
+[node name="Player" parent="Positions" index="0"]
+position = Vector2( 998, 696 )
+
+[node name="Enemy" parent="Positions" index="1"]
+position = Vector2( 329, 712 )
+
+[node name="Girlfriend" parent="Positions" index="2"]
+position = Vector2( 640, 598 )
+
+[node name="ParallaxBackground" type="ParallaxBackground" parent="Background" index="0"]
+scroll_base_offset = Vector2( 640, 360 )
+
+[node name="ParallaxLayer" type="ParallaxLayer" parent="Background/ParallaxBackground" index="0"]
+motion_scale = Vector2( 0.1, 0.1 )
+
+[node name="WeebSky" type="Sprite" parent="Background/ParallaxBackground/ParallaxLayer" index="0"]
+scale = Vector2( 6, 6 )
+texture = ExtResource( 2 )
+
+[node name="ParallaxLayer2" type="ParallaxLayer" parent="Background/ParallaxBackground" index="1"]
+motion_scale = Vector2( 0.6, 0.9 )
+
+[node name="WeebSchool" type="Sprite" parent="Background/ParallaxBackground/ParallaxLayer2" index="0"]
+position = Vector2( 0, 6 )
+scale = Vector2( 6, 6 )
+texture = ExtResource( 3 )
+
+[node name="ParallaxLayer3" type="ParallaxLayer" parent="Background/ParallaxBackground" index="2"]
+motion_scale = Vector2( 0.95, 0.95 )
+
+[node name="WeebStreet" type="Sprite" parent="Background/ParallaxBackground/ParallaxLayer3" index="0"]
+scale = Vector2( 6, 6 )
+texture = ExtResource( 4 )
+
+[node name="BgFreaks" type="Sprite" parent="Background/ParallaxBackground/ParallaxLayer3" index="1"]
+position = Vector2( -336, 0 )
+scale = Vector2( 6, 6 )
+texture = ExtResource( 7 )
+hframes = 2
+vframes = 3
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Background/ParallaxBackground/ParallaxLayer3/BgFreaks" index="0"]
+anims/Down = SubResource( 1 )
+anims/RESET = SubResource( 2 )
+anims/Up = SubResource( 3 )
+
+[node name="ParallaxLayer4" type="ParallaxLayer" parent="Background/ParallaxBackground" index="3"]
+
+[node name="WeebTrees" type="Sprite" parent="Background/ParallaxBackground/ParallaxLayer4" index="0"]
+position = Vector2( -60, -21 )
+scale = Vector2( 8, 8 )
+texture = ExtResource( 5 )
+hframes = 7
+vframes = 3

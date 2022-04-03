@@ -168,7 +168,7 @@ tracks/0/keys = {
 scale = Vector2( 6, 6 )
 script = ExtResource( 1 )
 spriteScale = Vector2( 6, 6 )
-camOffset = Vector2( 200, -200 )
+camOffset = Vector2( 300, -260 )
 iconSheet = ExtResource( 3 )
 characterColor = Color( 0.482353, 0.839216, 0.964706, 1 )
 

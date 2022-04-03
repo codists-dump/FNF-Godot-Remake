@@ -9,7 +9,7 @@ signal note_created(note)
 # constants
 # hit timings and windows
 # {rating name: [min ms, score]}
-const HIT_TIMINGS = {"shit": [120, 50, 0.25], "bad": [100, 100, 0.50], "good": [80, 200, 0.75], "sick": [55, 350, 1]}
+const HIT_TIMINGS = {"shit": [140, 50, 0.25], "bad": [120, 100, 0.50], "good": [90, 200, 0.75], "sick": [60, 350, 1]}
 #const HIT_TIMINGS = {"shit": [140, 50, 0.25], "bad": [120, 100, 0.50], "good": [100, 200, 0.75], "sick": [80, 350, 1]}
 
 # preloading nodes
@@ -20,7 +20,7 @@ const MISS_SOUNDS = [preload("res://Assets/Sounds/missnote1.ogg"),
 					preload("res://Assets/Sounds/missnote2.ogg"),
 					preload("res://Assets/Sounds/missnote3.ogg")]
 					
-const RATING_SCENE = preload("res://Scenes/States/PlayState/Rating.tscn")
+var RATING_SCENE = preload("res://Scenes/States/PlayState/Rating.tscn")
 
 # notes
 const NOTES = {
@@ -45,6 +45,8 @@ export (String) var GFCharacter
 export (String) var song = "no-villains"
 export (String) var difficulty = "hard"
 export (float) var speed = 1
+
+export (String) var noteSkin = "Default"
 
 # player stats
 var health = 50
@@ -84,6 +86,7 @@ var healthShakeIntensity = 1
 
 var hudBopCounter = 0
 var maxHudBop = 4
+var maxHudScale = 1.02
 
 var freeCamera = false
 var cameraTimer = -1
@@ -93,6 +96,8 @@ var oldHealth = health
 
 # skinning?
 
+func _enter_tree():
+	Main.load_note_sprites(noteSkin)
 
 func _ready():
 	# get the strums nodes
@@ -646,8 +651,9 @@ func hud_bop():
 	
 	hudBopCounter += 1
 	if (hudBopCounter >= maxHudBop):
-		$HUD/HudElements.scale = Vector2(1.02, 1.02)
+		$HUD/HudElements.scale = Vector2(maxHudScale, maxHudScale)
 		hudBopCounter = 0
+
 
 func setup_characters():
 	if (GFCharacter != null):
@@ -852,3 +858,17 @@ func on_event(eventName, eventArgs):
 			
 			oldCharacter.queue_free()
 			set(character, newCharacter)
+			
+		"change_hud_bop":
+			var _beats = 4
+			var _scale = 1.02
+			
+			print(eventArgs)
+			
+			if len(eventArgs) >= 1:
+				_beats = float(eventArgs[0])
+			if len(eventArgs) >= 2:
+				_scale = float(eventArgs[1])
+				
+			maxHudBop = _beats
+			maxHudScale = _scale

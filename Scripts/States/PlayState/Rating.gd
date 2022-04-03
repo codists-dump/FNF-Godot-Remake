@@ -6,8 +6,9 @@ var gravity = 450
 var combo = 0
 var offset = 0
 
-var numberTexture = preload("res://Assets/Sprites/UI/combo.png")
 var numberVsps = []
+
+export var numberTexture = preload("res://Assets/Sprites/UI/combo.png")
 
 func _ready():
 	create_numbers()
