@@ -83,7 +83,6 @@ func _ready():
 	
 	setup_note_colors()
 	$Line2D.texture = holdArray[0]
-	$Line2D.width = holdArray[0].get_width()
 
 func _process(_delta):
 	var moveScale = strum_lane.moveScale
@@ -93,10 +92,13 @@ func _process(_delta):
 		var time = Conductor.songPositionMulti + AudioServer.get_time_since_last_mix() - AudioServer.get_output_latency()
 	
 		# set the notes position
-		if (prevSongPos < time):
-			realSongPos = time
+		if (time > 0):
+			if (prevSongPos < time):
+				realSongPos = time
+			else:
+				realSongPos += _delta * Conductor.song_speed
 		else:
-			realSongPos += _delta * Conductor.song_speed
+			realSongPos = time
 		
 		prevSongPos = time
 		
