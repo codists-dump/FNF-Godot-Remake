@@ -1,3 +1,10 @@
+archived because im trying to seperate myself from FNF
+if you wanna continue this yourself go ahead, i'd love to see it
+heres the w.i.p rewrite code by the way
+
+https://drive.google.com/drive/folders/1nO78klXlprdkk3CZvJhq5U7D2g0nnDm2?usp=sharing
+
+
 # FNF-Godot
 
 please dont use this for any mods yet, it is still very unstable and missing key features
